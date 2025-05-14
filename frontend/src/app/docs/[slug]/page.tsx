@@ -19,15 +19,12 @@ export async function generateStaticParams() {
 // Gera os metadados para a página (título, etc.)
 export async function generateMetadata({ params }: DocPageProps) {
   try {
-    const doc = await getDocData(params.slug); // Corrigido: usa getDocData
+    const doc = await getDocData(params.slug);
     return {
       title: doc.title || params.slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      // Você pode adicionar mais metadados aqui, como description, se estiverem no frontmatter
-      // description: doc.description,
     };
-  } catch (error) {
-    // Se o documento não for encontrado por getDocData, ele lançará um erro (fs.readFileSync)
-    // Ou podemos verificar se doc é nulo se getDocData retornasse null em caso de erro, mas ele não faz isso.
+  } catch (err) {
+    console.error(`Failed to generate metadata for slug: ${params.slug}`, err);
     return {
       title: 'Documento Não Encontrado',
     };
@@ -36,22 +33,22 @@ export async function generateMetadata({ params }: DocPageProps) {
 
 // Componente da página do documento
 export default async function DocPage({ params }: DocPageProps) {
-  let doc = await getDocData(params.slug).catch(() => undefined);
-
-  if (!doc) {
+  const docData = await getDocData(params.slug).catch((err) => {
+    console.error(`Failed to get document data for slug: ${params.slug}`, err);
     notFound();
-    return null; // Adicionado para garantir que o fluxo de execução pare aqui
+  });
+
+  if (!docData) {
+    notFound();
   }
+
+  const doc = docData;
 
   return (
     <article className="prose prose-invert prose-lg mx-auto p-6 max-w-4xl min-h-screen">
       <header className="mb-8">
-        <Link href="/docs">
-          <a className="text-blue-400 hover:text-blue-300 hover:underline mb-4 block">&larr; Voltar para Documentação</a>
-        </Link>
-        <h1 className="text-4xl font-bold text-gray-100 mb-2">
-          {doc.title || params.slug.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
-        </h1>
+        <Link href="/docs" className="text-blue-400 hover:text-blue-300 hover:underline mb-4 block">&larr; Voltar para Documentação</Link>
+        <h1 className="text-4xl font-bold text-gray-100 mb-2">{doc.title || params.slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h1>
         {doc.date && <p className="text-gray-400 text-sm">{doc.date}</p>}
       </header>
       <MDXRemote {...doc.mdxSource} />
