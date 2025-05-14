@@ -32,12 +32,6 @@ export function ConnectionContextMenu({ children, connectionId, position, onClos
   const handleEditLabel = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    
-    // Use the WorkflowCanvas's label editor
-    if (window.workflowCanvas && window.workflowCanvas.editConnectionLabel) {
-    e.preventDefault()
-    e.stopPropagation()
-    
     // Use the WorkflowCanvas's label editor
     if (window.workflowCanvas && window.workflowCanvas.editConnectionLabel) {
       window.workflowCanvas.editConnectionLabel(connectionId, { x: e.clientX, y: e.clientY })
