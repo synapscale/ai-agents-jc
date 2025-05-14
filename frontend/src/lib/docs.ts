@@ -19,72 +19,48 @@ interface DocFrontmatter {
 }
 
 export function getSortedDocsData(): ({ id: string } & DocFrontmatter)[] {
-  // Lê todos os nomes de arquivo no diretório de documentos
-  const fileNames = fs.readdirSync(docsDirectory);
-  const allDocsData = fileNames.map((fileName) => {
-    // Remove ".md" do nome do arquivo para obter o id (slug)
+  const fileNames: string[] = fs.readdirSync(docsDirectory);
+  const allDocsData = fileNames.map((fileName: string) => {
     const id = fileName.replace(/\.md$/, '');
-
-    // Lê o arquivo markdown como string
     const fullPath = path.join(docsDirectory, fileName);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
-
-    // Usa gray-matter para parsear a seção de metadados (frontmatter)
     const matterResult = matter(fileContents);
-
-    // Combina os dados com o id, fazendo um type assertion para DocFrontmatter
     return {
       id,
       ...(matterResult.data as DocFrontmatter),
     };
   });
 
-  // Ordena os posts por id (ou outro critério, como título ou data se disponível e consistente)
-  return allDocsData.sort((a, b) => {
+  return allDocsData.sort((a: { id: string }, b: { id: string }) => {
     if (a.id < b.id) {
       return -1;
     } else {
       return 1;
     }
-    // Exemplo de ordenação por data (descomente e ajuste se 'date' for um campo obrigatório e formatado):
-    // if (a.date && b.date) {
-    //   if (a.date < b.date) {
-    //     return 1;
-    //   } else {
-    //     return -1;
-    //   }
-    // }
-    // return 0;
   });
 }
 
 export async function getDocData(id: string): Promise<{
   id: string;
-  mdxSource: MDXRemoteSerializeResult;
+  mdxSource: MDXRemoteSerializeResult & { source: string };
 } & DocFrontmatter> {
   const fullPath = path.join(docsDirectory, `${id}.md`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
 
-  // Usa gray-matter para parsear o frontmatter e o conteúdo
   const matterResult = matter(fileContents);
 
-  // Usa next-mdx-remote para serializar o conteúdo MDX
-  const mdxSource = await serialize(matterResult.content);
+  const mdxSource = await serialize(matterResult.content, { scope: matterResult.data });
 
-  // Retorna os dados e o mdxSource, fazendo um type assertion para DocFrontmatter
   return {
     id,
-    mdxSource,
+    mdxSource: { ...mdxSource, source: matterResult.content },
     ...(matterResult.data as DocFrontmatter),
   };
 }
 
-export function getAllDocIds(): { params: { slug: string } }[] {
-  const fileNames = fs.readdirSync(docsDirectory);
-
-  // Retorna uma lista de objetos no formato esperado por getStaticPaths
-  // Cada objeto deve ter a chave `params` e dentro dela um objeto com a chave `slug`
-  return fileNames.map((fileName) => {
+export function getAllDocSlugs(): { params: { slug: string } }[] {
+  const fileNames: string[] = fs.readdirSync(docsDirectory);
+  return fileNames.map((fileName: string) => {
     return {
       params: {
         slug: fileName.replace(/\.md$/, ''),

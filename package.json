@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "next": "^15.3.2",
+    "next-mdx-remote": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/next": "^8.0.7",
+    "@types/node": "^22.15.18",
+    "typescript": "^5.8.3"
+  }
+}
