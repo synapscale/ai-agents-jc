@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { NodeParameter, ParameterDataType } from "@/types/node-definition"
 import { Trash2, Plus, Copy } from "lucide-react"
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 
 interface ParametersEditorProps {
   parameters: NodeParameter[]
@@ -24,6 +24,8 @@ export function ParametersEditor({ parameters, onChange }: ParametersEditorProps
     parameters.length > 0 ? parameters[0].id : null,
   )
 
+  // Corrigindo tipos e acessos conforme a interface NodeParameter
+  // 1. Criação de novo parâmetro
   const addParameter = () => {
     const newParameter: NodeParameter = {
       id: `param-${nanoid(6)}`,
@@ -31,8 +33,9 @@ export function ParametersEditor({ parameters, onChange }: ParametersEditorProps
       key: `newParam${parameters.length + 1}`,
       type: "string",
       description: "",
+      required: false,
+      options: [],
     }
-
     const updatedParameters = [...parameters, newParameter]
     onChange(updatedParameters)
     setSelectedParameterId(newParameter.id)
@@ -43,17 +46,16 @@ export function ParametersEditor({ parameters, onChange }: ParametersEditorProps
     onChange(updatedParameters)
   }
 
+  // 2. Duplicação de parâmetro
   const duplicateParameter = (id: string) => {
     const paramToDuplicate = parameters.find((p) => p.id === id)
     if (!paramToDuplicate) return
-
     const newParameter: NodeParameter = {
       ...paramToDuplicate,
       id: `param-${nanoid(6)}`,
       name: `${paramToDuplicate.name} (copy)`,
       key: `${paramToDuplicate.key}Copy`,
     }
-
     const updatedParameters = [...parameters, newParameter]
     onChange(updatedParameters)
     setSelectedParameterId(newParameter.id)
@@ -169,7 +171,6 @@ export function ParametersEditor({ parameters, onChange }: ParametersEditorProps
                 <TabsList className="mb-4">
                   <TabsTrigger value="basic">Basic</TabsTrigger>
                   <TabsTrigger value="validation">Validation</TabsTrigger>
-                  <TabsTrigger value="advanced">Advanced</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="basic" className="space-y-4">
@@ -198,7 +199,7 @@ export function ParametersEditor({ parameters, onChange }: ParametersEditorProps
                     <Select
                       value={selectedParameter.type}
                       onValueChange={(value) =>
-                        updateParameter(selectedParameter.id, { type: value as ParameterDataType })
+                        updateParameter(selectedParameter.id, { type: value as NodeParameter["type"] })
                       }
                     >
                       <SelectTrigger id="param-type">
@@ -208,14 +209,13 @@ export function ParametersEditor({ parameters, onChange }: ParametersEditorProps
                         <SelectItem value="string">String</SelectItem>
                         <SelectItem value="number">Number</SelectItem>
                         <SelectItem value="boolean">Boolean</SelectItem>
-                        <SelectItem value="object">Object</SelectItem>
-                        <SelectItem value="array">Array</SelectItem>
-                        <SelectItem value="date">Date</SelectItem>
+                        <SelectItem value="select">Select</SelectItem>
+                        <SelectItem value="multiSelect">MultiSelect</SelectItem>
                         <SelectItem value="json">JSON</SelectItem>
                         <SelectItem value="code">Code</SelectItem>
-                        <SelectItem value="expression">Expression</SelectItem>
-                        <SelectItem value="credential">Credential</SelectItem>
-                        <SelectItem value="options">Options</SelectItem>
+                        <SelectItem value="color">Color</SelectItem>
+                        <SelectItem value="date">Date</SelectItem>
+                        <SelectItem value="dateTime">DateTime</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -255,21 +255,15 @@ export function ParametersEditor({ parameters, onChange }: ParametersEditorProps
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="param-required"
-                      checked={selectedParameter.validation?.required || false}
-                      onCheckedChange={(checked) =>
-                        updateParameter(selectedParameter.id, {
-                          validation: {
-                            ...(selectedParameter.validation || {}),
-                            required: checked,
-                          },
-                        })
-                      }
+                      checked={selectedParameter.required || false}
+                      onCheckedChange={(checked) => updateParameter(selectedParameter.id, { required: checked })}
                     />
                     <Label htmlFor="param-required">Required</Label>
                   </div>
 
-                  {(selectedParameter.type === "string" || selectedParameter.type === "array") && (
+                  {selectedParameter.type === "string" && (
                     <div className="grid grid-cols-2 gap-4">
+                      {/* Min/Max Length */}
                       <div className="space-y-2">
                         <Label htmlFor="param-min">Min Length</Label>
                         <Input
@@ -286,7 +280,6 @@ export function ParametersEditor({ parameters, onChange }: ParametersEditorProps
                           }
                         />
                       </div>
-
                       <div className="space-y-2">
                         <Label htmlFor="param-max">Max Length</Label>
                         <Input
@@ -324,151 +317,6 @@ export function ParametersEditor({ parameters, onChange }: ParametersEditorProps
                       />
                     </div>
                   )}
-
-                  {selectedParameter.type === "options" && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <Label>Options</Label>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            const currentOptions = selectedParameter.validation?.options || []
-                            updateParameter(selectedParameter.id, {
-                              validation: {
-                                ...(selectedParameter.validation || {}),
-                                options: [
-                                  ...currentOptions,
-                                  {
-                                    name: `Option ${currentOptions.length + 1}`,
-                                    value: `option${currentOptions.length + 1}`,
-                                  },
-                                ],
-                              },
-                            })
-                          }}
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Add Option
-                        </Button>
-                      </div>
-
-                      <div className="border rounded-md">
-                        {(selectedParameter.validation?.options || []).length === 0 ? (
-                          <div className="p-4 text-center text-sm text-muted-foreground">
-                            No options defined. Click "Add Option" to create one.
-                          </div>
-                        ) : (
-                          <div className="divide-y">
-                            {(selectedParameter.validation?.options || []).map((option, index) => (
-                              <div key={index} className="p-3 flex items-center justify-between">
-                                <div className="grid grid-cols-2 gap-2 flex-1">
-                                  <Input
-                                    value={option.name}
-                                    onChange={(e) => {
-                                      const updatedOptions = [...(selectedParameter.validation?.options || [])]
-                                      updatedOptions[index] = { ...option, name: e.target.value }
-                                      updateParameter(selectedParameter.id, {
-                                        validation: {
-                                          ...(selectedParameter.validation || {}),
-                                          options: updatedOptions,
-                                        },
-                                      })
-                                    }}
-                                    placeholder="Display name"
-                                  />
-                                  <Input
-                                    value={option.value}
-                                    onChange={(e) => {
-                                      const updatedOptions = [...(selectedParameter.validation?.options || [])]
-                                      updatedOptions[index] = { ...option, value: e.target.value }
-                                      updateParameter(selectedParameter.id, {
-                                        validation: {
-                                          ...(selectedParameter.validation || {}),
-                                          options: updatedOptions,
-                                        },
-                                      })
-                                    }}
-                                    placeholder="Value"
-                                  />
-                                </div>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => {
-                                    const updatedOptions = [...(selectedParameter.validation?.options || [])]
-                                    updatedOptions.splice(index, 1)
-                                    updateParameter(selectedParameter.id, {
-                                      validation: {
-                                        ...(selectedParameter.validation || {}),
-                                        options: updatedOptions,
-                                      },
-                                    })
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </TabsContent>
-
-                <TabsContent value="advanced" className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="param-advanced"
-                      checked={selectedParameter.advanced || false}
-                      onCheckedChange={(checked) => updateParameter(selectedParameter.id, { advanced: checked })}
-                    />
-                    <Label htmlFor="param-advanced">Show in Advanced Settings</Label>
-                  </div>
-
-                  {selectedParameter.type === "array" && (
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id="param-multiple"
-                        checked={selectedParameter.typeOptions?.multipleValues || false}
-                        onCheckedChange={(checked) =>
-                          updateParameter(selectedParameter.id, {
-                            typeOptions: {
-                              ...(selectedParameter.typeOptions || {}),
-                              multipleValues: checked,
-                            },
-                          })
-                        }
-                      />
-                      <Label htmlFor="param-multiple">Allow Multiple Values</Label>
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="param-display-options">Display Conditions (JSON)</Label>
-                    <Textarea
-                      id="param-display-options"
-                      value={
-                        selectedParameter.displayOptions
-                          ? JSON.stringify(selectedParameter.displayOptions, null, 2)
-                          : ""
-                      }
-                      onChange={(e) => {
-                        try {
-                          const displayOptions = e.target.value ? JSON.parse(e.target.value) : undefined
-                          updateParameter(selectedParameter.id, { displayOptions })
-                        } catch (error) {
-                          // Handle JSON parse error
-                        }
-                      }}
-                      placeholder='{"show": {"parameterName": "value"}}'
-                      className="font-mono text-sm"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Define when this parameter should be shown or hidden based on other parameter values.
-                    </p>
-                  </div>
                 </TabsContent>
               </Tabs>
             </CardContent>
