@@ -41,6 +41,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currentTab, setCurrentTab] = useState('canvas')
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
   const [conversations, setConversations] = useState<Conversation[]>([])
+  // Garante que sempre retorna array
+  const conversationsSafe = Array.isArray(conversations) ? conversations : [];
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null)
   const [settings, setSettings] = useState<AppSettings>(defaultSettings)
 
@@ -74,7 +76,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setCurrentTab,
         theme,
         setTheme,
-        conversations,
+        conversations: conversationsSafe,
         currentConversationId,
         addConversation,
         updateConversation,

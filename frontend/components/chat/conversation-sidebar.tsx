@@ -43,23 +43,22 @@ export function ConversationSidebar({ className }: ConversationSidebarProps) {
   
   const [searchTerm, setSearchTerm] = React.useState('')
   
+  const safeConversations = Array.isArray(conversations) ? conversations : [];
   // Filtrar conversas favoritas
   const favoriteConversations = React.useMemo(() => {
-    return conversations.filter(conv => conv.isFavorite)
-  }, [conversations])
-  
+    return safeConversations.filter(conv => conv.metadata?.isFavorite)
+  }, [safeConversations])
   // Filtrar conversas por termo de busca
   const filteredConversations = React.useMemo(() => {
-    if (!searchTerm) return conversations
+    if (!searchTerm) return safeConversations
     
-    return conversations.filter(conv => {
-      // Buscar em todas as mensagens do usuário
-      const userMessages = conv.messages.filter(m => m.role === 'user')
+    return safeConversations.filter(conv => {
+      const userMessages = Array.isArray(conv.messages) ? conv.messages.filter(m => m.role === 'user') : []
       return userMessages.some(m => 
         m.content.toLowerCase().includes(searchTerm.toLowerCase())
       )
     })
-  }, [conversations, searchTerm])
+  }, [safeConversations, searchTerm])
   
   // Obter título da conversa a partir da primeira mensagem do usuário
   const getConversationTitle = (messages: Message[]) => {

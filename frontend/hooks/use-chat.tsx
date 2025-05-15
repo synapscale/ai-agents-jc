@@ -78,7 +78,8 @@ export function useChat() {
     { id: 'gemini-ultra', name: 'Gemini Ultra', provider: 'google' },
   ];
 
-  const currentConversation = conversations.find(
+  const conversationsSafe = Array.isArray(conversations) ? conversations : [];
+  const currentConversation = conversationsSafe.find(
     (conv) => conv.id === currentConversationId
   );
 
@@ -190,13 +191,64 @@ export function useChat() {
     [currentConversation, currentConversationId, addConversation, updateConversation, currentModel]
   );
 
+  // Funções auxiliares para o sidebar
+  const createNewConversation = useCallback(() => {
+    const newId = `conv_${Date.now()}`;
+    const newConversation: Conversation = {
+      id: newId,
+      title: 'Nova conversa',
+      messages: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    addConversation(newConversation);
+    if (typeof window !== 'undefined') {
+      // Evita SSR crash
+      updateConversation(newId, {});
+    }
+  }, [addConversation, updateConversation]);
+
+  const selectConversation = useCallback((id: string) => {
+    if (typeof window !== 'undefined') {
+      // Evita SSR crash
+      updateConversation(id, {});
+    }
+  }, [updateConversation]);
+
+  const deleteConversation = useAppContext().deleteConversation;
+
+  const favoriteConversation = useCallback((id: string, isFavorite: boolean) => {
+    updateConversation(id, { metadata: { isFavorite } });
+  }, [updateConversation]);
+
+  const exportConversation = useCallback((id: string) => {
+    // Implementação simplificada: exporta JSON
+    const conv = conversationsSafe.find(c => c.id === id);
+    if (conv) {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(conv));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", `${conv.title || 'conversa'}.json`);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    }
+  }, [conversationsSafe]);
+
   return {
     messages: currentConversation?.messages || [],
     isLoading,
     sendMessage,
     currentModel,
     setCurrentModel,
-    availableModels
+    availableModels,
+    conversations: conversationsSafe,
+    currentConversationId,
+    createNewConversation,
+    selectConversation,
+    deleteConversation,
+    favoriteConversation,
+    exportConversation
   };
 }
 
