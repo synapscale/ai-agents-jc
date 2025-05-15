@@ -6,7 +6,7 @@
 "use client"
 
 import { useRef, useCallback, useEffect, useState } from "react"
-import { useAppContext } from "@/contexts/app-context"
+import { useAppContext } from "@/context/app-context"
 import { showNotification } from "@/components/ui/notification"
 import { sendChatMessage } from "@/lib/ai-utils"
 import { Message, Conversation } from "@/types/chat"
