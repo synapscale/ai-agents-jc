@@ -1,108 +1,113 @@
+/**
+ * Sidebar Component
+ *
+ * Componente de barra lateral principal que fornece navegação para todas as áreas do aplicativo.
+ * Inclui seções para funcionalidades principais, desenvolvimento, workflows recentes e configurações.
+ */
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import Link from "next/link"
+import { useCallback, useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { useSidebar } from "@/context/sidebar-context"
 import {
-  Settings,
+  LayoutGrid,
   Menu,
-  X,
-  Code,
-  Variable,
-  BookTemplate,
-  PenTool,
+  Settings,
   History,
-  FileCode,
   BookOpen,
   Box,
   ShoppingBag,
+  BookTemplate,
+  FileCode,
+  Variable,
+  MessageSquare,
+  Workflow,
+  Layers,
+  PanelLeft,
 } from "lucide-react"
 
 /**
- * Componente de barra lateral da aplicação.
- * Fornece navegação principal e acesso a recursos do sistema.
+ * Componente de barra lateral principal.
  *
- * @param props - Propriedades do componente
- * @param props.className - Classes CSS adicionais
+ * @returns Componente React
  */
-export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
+export default function Sidebar() {
   const pathname = usePathname()
-  const { isOpen, toggle, close, isCollapsed } = useSidebar()
-  const [isMounted, setIsMounted] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
-  // Previne incompatibilidade de hidratação renderizando apenas após a montagem
-  useEffect(() => {
-    setIsMounted(true)
+  // Alterna o estado de abertura da barra lateral
+  const toggle = useCallback(() => {
+    setIsOpen((prev) => !prev)
   }, [])
 
-  // Manipula o comportamento da barra lateral em dispositivos móveis nas mudanças de rota
+  // Fecha a barra lateral em dispositivos móveis quando o caminho muda
   useEffect(() => {
-    // Fecha a barra lateral na mudança de rota em dispositivos móveis
-    const handleRouteChange = () => {
-      if (window.innerWidth < 1024) {
-        close()
-      }
-    }
-
-    handleRouteChange()
-  }, [pathname, close])
-
-  // Não renderiza nada durante SSR para prevenir incompatibilidade de hidratação
-  if (!isMounted) {
-    return null
-  }
+    setIsOpen(false)
+  }, [pathname])
 
   return (
     <>
-      {/* Overlay móvel - mostrado apenas quando a barra lateral está aberta em dispositivos móveis */}
+      {/* Overlay para dispositivos móveis */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
-          onClick={close}
+          onClick={toggle}
           aria-hidden="true"
         />
       )}
 
-      {/* Container da barra lateral */}
+      {/* Barra lateral principal */}
       <div
         className={cn(
-          "fixed top-0 bottom-0 left-0 z-50 w-64 border-r bg-background transition-transform duration-300 ease-in-out lg:z-0 lg:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full",
-          className,
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r bg-card transition-transform duration-300 ease-in-out lg:static lg:z-0",
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
-        aria-label="Navegação principal"
       >
         {/* Cabeçalho da barra lateral */}
-        <div className="flex h-16 items-center justify-between px-4 border-b">
-          <h2 className="text-lg font-semibold">Workflow Builder</h2>
-          <Button variant="ghost" size="icon" onClick={toggle} className="lg:hidden" aria-label="Fechar barra lateral">
-            <X className="h-5 w-5" aria-hidden="true" />
-            <span className="sr-only">Fechar barra lateral</span>
-          </Button>
+        <div className="flex h-14 items-center border-b px-4">
+          <Link href="/" className="flex items-center gap-2 font-semibold">
+            <Workflow className="h-6 w-6" />
+            <span>AI Agents JC</span>
+          </Link>
         </div>
 
-        {/* Conteúdo da barra lateral */}
-        <div className="space-y-4 py-4 flex-1">
-          {/* Links de navegação principal */}
+        {/* Conteúdo principal da barra lateral */}
+        <div className="flex-1 overflow-auto">
           <div className="px-3 py-2">
-            <h3 className="mb-2 px-4 text-xs font-semibold text-muted-foreground" id="workflow-nav-heading">
-              Workflow
+            <h3 className="mb-2 px-4 text-xs font-semibold text-muted-foreground" id="main-nav-heading">
+              Principal
             </h3>
-            <div className="space-y-1" role="navigation" aria-labelledby="workflow-nav-heading">
-              <NavItem href="/canvas" icon={<PenTool className="h-5 w-5" />} label="Canvas" pathname={pathname} />
+            <div className="space-y-1" role="navigation" aria-labelledby="main-nav-heading">
               <NavItem
-                href="/node-definitions"
-                icon={<Code className="h-5 w-5" />}
-                label="Definições de Nós"
+                href="/canvas"
+                icon={<LayoutGrid className="h-5 w-5" />}
+                label="Editor de Workflow"
                 pathname={pathname}
               />
+              <NavItem
+                href="/chat"
+                icon={<MessageSquare className="h-5 w-5" />}
+                label="Chat Interativo"
+                pathname={pathname}
+              />
+              <NavItem
+                href="/marketplace"
+                icon={<ShoppingBag className="h-5 w-5" />}
+                label="Marketplace"
+                pathname={pathname}
+              />
+            </div>
+          </div>
+          
+          <div className="px-3 py-2">
+            <h3 className="mb-2 px-4 text-xs font-semibold text-muted-foreground" id="resources-nav-heading">
+              Recursos
+            </h3>
+            <div className="space-y-1" role="navigation" aria-labelledby="resources-nav-heading">
               <NavItem
                 href="/templates"
                 icon={<BookTemplate className="h-5 w-5" />}
@@ -123,7 +128,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
               />
             </div>
           </div>
-
+          
           <div className="px-3 py-2">
             <h3 className="mb-2 px-4 text-xs font-semibold text-muted-foreground" id="dev-nav-heading">
               Desenvolvimento
@@ -135,7 +140,12 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
                 label="Execuções"
                 pathname={pathname}
               />
-              <NavItem href="/docs" icon={<BookOpen className="h-5 w-5" />} label="Documentação" pathname={pathname} />
+              <NavItem 
+                href="/docs" 
+                icon={<BookOpen className="h-5 w-5" />} 
+                label="Documentação" 
+                pathname={pathname} 
+              />
               <NavItem
                 href="/node-definitions"
                 icon={<Box className="h-5 w-5" />}
@@ -143,16 +153,16 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
                 pathname={pathname}
               />
               <NavItem
-                href="/marketplace"
-                icon={<ShoppingBag className="h-5 w-5" />}
-                label="Marketplace"
+                href="/components"
+                icon={<Layers className="h-5 w-5" />}
+                label="Componentes"
                 pathname={pathname}
               />
             </div>
           </div>
-
+          
           <Separator />
-
+          
           {/* Área rolável para lista de workflows */}
           <div className="px-3 py-2">
             <h3 className="mb-2 px-4 text-xs font-semibold text-muted-foreground" id="recent-workflows-heading">
@@ -179,14 +189,19 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
             </ScrollArea>
           </div>
         </div>
-
+        
         {/* Rodapé da barra lateral */}
         <div className="mt-auto p-4">
           <Separator className="mb-4" />
-          <NavItem href="/settings" icon={<Settings className="h-5 w-5" />} label="Configurações" pathname={pathname} />
+          <NavItem 
+            href="/settings" 
+            icon={<Settings className="h-5 w-5" />} 
+            label="Configurações" 
+            pathname={pathname} 
+          />
         </div>
       </div>
-
+      
       {/* Botão de alternância móvel - fixo no canto inferior esquerdo */}
       <Button
         variant="outline"
@@ -233,7 +248,7 @@ interface NavItemProps {
 function NavItem({ href, icon, label, pathname }: NavItemProps) {
   // Determina se este item de navegação está ativo com base no caminho atual
   const isActive = pathname === href || (href !== "/" && pathname.startsWith(href))
-
+  
   return (
     <Link
       href={href}
