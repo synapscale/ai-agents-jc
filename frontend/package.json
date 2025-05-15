@@ -11,7 +11,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "cypress run",
-    "test:e2e:open": "cypress open"
+    "test:e2e:open": "cypress open",
+    "install:deps": "npm install --legacy-peer-deps"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
@@ -84,7 +85,7 @@
     "@babel/preset-typescript": "^7.27.1",
     "@eslint/eslintrc": "^3",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^14.3.1",
+    "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^22",
@@ -107,5 +108,9 @@
       "sharp",
       "unrs-resolver"
     ]
+  },
+  "resolutions": {
+    "react": "^19",
+    "react-dom": "^19"
   }
 }
