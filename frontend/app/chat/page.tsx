@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { AppProvider } from '@/contexts/app-context'
+import { AppProvider } from '@/context/app-context'
 import { OnboardingProvider } from '@/components/onboarding/onboarding-context'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { KeyboardShortcutsProvider } from '@/components/keyboard-shortcuts/keyboard-shortcuts-context'
