@@ -63,7 +63,8 @@ export function useChat() {
     currentConversationId,
     addConversation,
     updateConversation,
-    settings
+    settings,
+    setCurrentConversationId
   } = useAppContext();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -210,16 +211,21 @@ export function useChat() {
 
   const selectConversation = useCallback((id: string) => {
     if (typeof window !== 'undefined') {
-      // Evita SSR crash
-      updateConversation(id, {});
+      setCurrentConversationId(id);
     }
-  }, [updateConversation]);
+  }, [setCurrentConversationId]);
 
   const deleteConversation = useAppContext().deleteConversation;
 
   const favoriteConversation = useCallback((id: string, isFavorite: boolean) => {
-    updateConversation(id, { metadata: { isFavorite } });
-  }, [updateConversation]);
+    const conv = conversationsSafe.find(c => c.id === id);
+    updateConversation(id, {
+      metadata: {
+        ...((conv && conv.metadata) || {}),
+        isFavorite,
+      },
+    });
+  }, [updateConversation, conversationsSafe]);
 
   const exportConversation = useCallback((id: string) => {
     // Implementação simplificada: exporta JSON
