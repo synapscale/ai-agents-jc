@@ -1,9 +1,3 @@
-/**
- * ChatHeader
- * 
- * Componente de cabeçalho para a interface de chat.
- * Inclui título da conversa, botões de ação e controles de navegação.
- */
 "use client"
 
 import { useState, useCallback } from "react"
@@ -27,27 +21,27 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 interface ChatHeaderProps {
-  currentConversation: Conversation | null
-  currentConversationId: string | null
-  onNewConversation: () => void
-  onUpdateConversationTitle: (id: string, title: string) => void
-  onDeleteConversation: (id: string) => void
-  onExportConversation: (id: string) => void
-  onToggleSidebar: () => void
+  currentConversation?: Conversation | null
+  currentConversationId?: string | null
+  onNewConversation?: () => void
+  onUpdateConversationTitle?: (id: string, title: string) => void
+  onDeleteConversation?: (id: string) => void
+  onExportConversation?: (id: string) => void
+  onToggleSidebar?: () => void
   onToggleComponentSelector?: () => void
 }
 
 /**
  * Componente de cabeçalho do chat
  */
-export default function ChatHeader({
+export function ChatHeader({
   currentConversation,
   currentConversationId,
-  onNewConversation,
-  onUpdateConversationTitle,
-  onDeleteConversation,
-  onExportConversation,
-  onToggleSidebar,
+  onNewConversation = () => {},
+  onUpdateConversationTitle = () => {},
+  onDeleteConversation = () => {},
+  onExportConversation = () => {},
+  onToggleSidebar = () => {},
   onToggleComponentSelector,
 }: ChatHeaderProps) {
   // Estados
@@ -179,3 +173,6 @@ export default function ChatHeader({
     </header>
   )
 }
+
+// Adicionar export default para compatibilidade com importações existentes
+export default ChatHeader

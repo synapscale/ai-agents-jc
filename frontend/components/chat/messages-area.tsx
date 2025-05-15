@@ -1,9 +1,3 @@
-/**
- * MessagesArea
- *
- * Componente responsável por exibir a área de mensagens do chat,
- * incluindo mensagens do usuário, do assistente e indicadores de carregamento.
- */
 "use client"
 
 import { useRef, useEffect, useMemo } from "react"
@@ -12,8 +6,8 @@ import ChatMessage from "./chat-message"
 import { Loader2 } from "lucide-react"
 
 interface MessagesAreaProps {
-  messages: Message[]
-  isLoading: boolean
+  messages?: Message[]
+  isLoading?: boolean
   showTimestamps?: boolean
   showSenders?: boolean
   focusMode?: boolean
@@ -25,9 +19,9 @@ interface MessagesAreaProps {
 /**
  * Área de mensagens do chat
  */
-export default function MessagesArea({
-  messages,
-  isLoading,
+export function MessagesArea({
+  messages = [],
+  isLoading = false,
   showTimestamps = true,
   showSenders = true,
   focusMode = false,
@@ -97,3 +91,6 @@ export default function MessagesArea({
     </div>
   )
 }
+
+// Adicionar export default para compatibilidade com importações existentes
+export default MessagesArea

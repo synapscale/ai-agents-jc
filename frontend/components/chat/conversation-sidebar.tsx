@@ -1,248 +1,266 @@
-/**
- * Componente de Barra Lateral de Conversas
- * 
- * Este componente exibe a lista de conversas do usuário e permite
- * gerenciar, selecionar e criar novas conversas.
- */
 "use client"
 
-import { useCallback } from "react"
-import { Conversation } from "@/types/chat"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Plus, Trash, Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import React from 'react'
+import { useChat } from '@/hooks/use-chat'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { 
+  MessageSquare, 
+  Settings, 
+  PlusCircle, 
+  Trash2, 
+  Star, 
+  StarOff,
+  Share2,
+  Download,
+  MoreHorizontal
+} from 'lucide-react'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { useState } from "react"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { cn } from '@/lib/utils'
+import { Message } from '@/types/chat'
+import { Badge } from '@/components/ui/badge'
 
 interface ConversationSidebarProps {
-  conversations: Conversation[]
-  currentConversationId: string | null
-  onSelectConversation: (id: string) => void
-  onNewConversation: () => void
-  onDeleteConversation: (id: string) => void
-  onClearConversations: () => void
+  className?: string
 }
 
-/**
- * Componente de barra lateral de conversas
- */
-export default function ConversationSidebar({
-  conversations,
-  currentConversationId,
-  onSelectConversation,
-  onNewConversation,
-  onDeleteConversation,
-  onClearConversations,
-}: ConversationSidebarProps) {
-  // Estados
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
-  const [conversationToDelete, setConversationToDelete] = useState<string | null>(null)
-
-  /**
-   * Filtra as conversas com base na consulta de pesquisa
-   */
-  const filteredConversations = conversations.filter((conversation) =>
-    conversation.title.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  /**
-   * Manipula a exclusão de uma conversa
-   */
-  const handleDeleteConversation = useCallback(
-    (id: string) => {
-      setConversationToDelete(id)
-      setIsDeleteDialogOpen(true)
-    },
-    []
-  )
-
-  /**
-   * Confirma a exclusão de uma conversa
-   */
-  const confirmDeleteConversation = useCallback(() => {
-    if (conversationToDelete) {
-      onDeleteConversation(conversationToDelete)
+export function ConversationSidebar({ className }: ConversationSidebarProps) {
+  const { 
+    conversations, 
+    currentConversationId, 
+    createNewConversation, 
+    selectConversation,
+    deleteConversation,
+    favoriteConversation,
+    exportConversation
+  } = useChat()
+  
+  const [searchTerm, setSearchTerm] = React.useState('')
+  
+  // Filtrar conversas favoritas
+  const favoriteConversations = React.useMemo(() => {
+    return conversations.filter(conv => conv.isFavorite)
+  }, [conversations])
+  
+  // Filtrar conversas por termo de busca
+  const filteredConversations = React.useMemo(() => {
+    if (!searchTerm) return conversations
+    
+    return conversations.filter(conv => {
+      // Buscar em todas as mensagens do usuário
+      const userMessages = conv.messages.filter(m => m.role === 'user')
+      return userMessages.some(m => 
+        m.content.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    })
+  }, [conversations, searchTerm])
+  
+  // Obter título da conversa a partir da primeira mensagem do usuário
+  const getConversationTitle = (messages: Message[]) => {
+    const firstUserMessage = messages.find(m => m.role === 'user')
+    if (firstUserMessage) {
+      // Limitar a 30 caracteres e adicionar reticências se necessário
+      const content = firstUserMessage.content
+      return content.length > 30 ? `${content.substring(0, 30)}...` : content
     }
-    setIsDeleteDialogOpen(false)
-    setConversationToDelete(null)
-  }, [conversationToDelete, onDeleteConversation])
-
-  /**
-   * Manipula a limpeza de todas as conversas
-   */
-  const handleClearConversations = useCallback(() => {
-    setIsClearDialogOpen(true)
-  }, [])
-
-  /**
-   * Confirma a limpeza de todas as conversas
-   */
-  const confirmClearConversations = useCallback(() => {
-    onClearConversations()
-    setIsClearDialogOpen(false)
-  }, [onClearConversations])
-
-  /**
-   * Formata a data da conversa
-   */
-  const formatConversationDate = useCallback((timestamp: number) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
-
-    if (diffDays === 0) {
-      return "Hoje"
-    } else if (diffDays === 1) {
-      return "Ontem"
-    } else if (diffDays < 7) {
-      return `${diffDays} dias atrás`
-    } else {
-      return date.toLocaleDateString()
+    return 'Nova conversa'
+  }
+  
+  // Obter data formatada da última mensagem
+  const getLastMessageDate = (messages: Message[]) => {
+    if (messages.length === 0) return ''
+    
+    const lastMessage = messages[messages.length - 1]
+    const date = new Date(lastMessage.timestamp || Date.now())
+    
+    // Se for hoje, mostrar apenas a hora
+    const today = new Date()
+    if (date.toDateString() === today.toDateString()) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
-  }, [])
-
-  return (
-    <div className="flex h-full w-full flex-col border-r bg-card">
-      {/* Cabeçalho */}
-      <div className="flex items-center justify-between p-4">
-        <h2 className="text-lg font-semibold">Conversas</h2>
-        <Button variant="outline" size="icon" onClick={onNewConversation} aria-label="Nova conversa">
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Barra de pesquisa */}
-      <div className="px-4 pb-2">
-        <div className="relative">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Pesquisar conversas..."
-            className="pl-8"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+    
+    // Se for este ano, mostrar dia e mês
+    if (date.getFullYear() === today.getFullYear()) {
+      return date.toLocaleDateString([], { day: '2-digit', month: '2-digit' })
+    }
+    
+    // Caso contrário, mostrar data completa
+    return date.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: '2-digit' })
+  }
+  
+  // Obter modelo usado na conversa
+  const getConversationModel = (conversation: any) => {
+    return conversation.model || 'gpt-4'
+  }
+  
+  // Renderizar item de conversa
+  const renderConversationItem = (conversation: any) => (
+    <div
+      key={conversation.id}
+      className={cn(
+        "group flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
+        conversation.id === currentConversationId && "bg-gray-100 dark:bg-gray-800"
+      )}
+      onClick={() => selectConversation(conversation.id)}
+    >
+      <div className="flex items-center flex-1 min-w-0">
+        <MessageSquare className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium truncate max-w-[140px]">
+              {getConversationTitle(conversation.messages)}
+            </span>
+            {conversation.isFavorite && (
+              <Star className="h-3 w-3 text-yellow-400 flex-shrink-0" />
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">
+              {getLastMessageDate(conversation.messages)}
+            </span>
+            <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
+              {getConversationModel(conversation)}
+            </Badge>
+          </div>
         </div>
       </div>
-
-      <Separator />
-
-      {/* Lista de conversas */}
-      <ScrollArea className="flex-1">
-        {filteredConversations.length === 0 ? (
-          <div className="p-4 text-center text-sm text-muted-foreground">
-            {searchQuery ? "Nenhuma conversa encontrada" : "Nenhuma conversa ainda"}
-          </div>
-        ) : (
-          <div className="p-2">
-            {filteredConversations.map((conversation) => (
-              <div
-                key={conversation.id}
-                className={`group relative mb-1 flex cursor-pointer flex-col rounded-md p-3 transition-colors ${
-                  conversation.id === currentConversationId
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                }`}
-                onClick={() => onSelectConversation(conversation.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <h3
-                    className={`text-sm font-medium ${
-                      conversation.id === currentConversationId
-                        ? "text-primary-foreground"
-                        : "text-foreground"
-                    }`}
-                  >
-                    {conversation.title}
-                  </h3>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100 ${
-                      conversation.id === currentConversationId
-                        ? "text-primary-foreground hover:bg-primary/90"
-                        : ""
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDeleteConversation(conversation.id)
-                    }}
-                    aria-label="Excluir conversa"
-                  >
-                    <Trash className="h-3 w-3" />
-                  </Button>
-                </div>
-                <p
-                  className={`mt-1 text-xs ${
-                    conversation.id === currentConversationId
-                      ? "text-primary-foreground/80"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {formatConversationDate(conversation.updatedAt)}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </ScrollArea>
-
-      {/* Rodapé */}
-      <div className="p-4">
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full text-xs"
-          onClick={handleClearConversations}
-          disabled={conversations.length === 0}
+      
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 opacity-0 group-hover:opacity-100 focus:opacity-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MoreHorizontal className="h-3 w-3" />
+            <span className="sr-only">Opções</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              favoriteConversation(conversation.id, !conversation.isFavorite)
+            }}
+          >
+            {conversation.isFavorite ? (
+              <>
+                <StarOff className="h-4 w-4 mr-2" />
+                Remover dos favoritos
+              </>
+            ) : (
+              <>
+                <Star className="h-4 w-4 mr-2" />
+                Adicionar aos favoritos
+              </>
+            )}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              exportConversation(conversation.id)
+            }}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Exportar conversa
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              // Implementar compartilhamento
+              alert('Funcionalidade de compartilhamento será implementada em breve.')
+            }}
+          >
+            <Share2 className="h-4 w-4 mr-2" />
+            Compartilhar
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-red-500 focus:text-red-500"
+            onClick={(e) => {
+              e.stopPropagation()
+              deleteConversation(conversation.id)
+            }}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Excluir conversa
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
+  
+  return (
+    <div className={cn("flex flex-col h-full border-r", className)}>
+      <div className="p-4 border-b">
+        <Button 
+          onClick={createNewConversation} 
+          className="w-full justify-start"
         >
-          Limpar todas as conversas
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Nova conversa
         </Button>
       </div>
-
-      {/* Diálogo de confirmação de exclusão */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir conversa</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir esta conversa? Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteConversation}>Excluir</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Diálogo de confirmação de limpeza */}
-      <AlertDialog open={isClearDialogOpen} onOpenChange={setIsClearDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Limpar todas as conversas</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja limpar todas as conversas? Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmClearConversations}>Limpar</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      
+      <div className="px-4 py-2">
+        <input
+          type="text"
+          placeholder="Buscar conversas..."
+          className="w-full px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+      
+      <Tabs defaultValue="chats" className="flex-1 flex flex-col">
+        <TabsList className="grid grid-cols-2 mx-4 mt-2">
+          <TabsTrigger value="chats">Conversas</TabsTrigger>
+          <TabsTrigger value="saved">Favoritos</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="chats" className="flex-1 p-0">
+          <ScrollArea className="h-full">
+            <div className="p-2 space-y-1">
+              {filteredConversations.length === 0 ? (
+                <div className="text-center py-4 text-sm text-gray-500">
+                  {searchTerm ? 'Nenhuma conversa encontrada' : 'Nenhuma conversa iniciada'}
+                </div>
+              ) : (
+                filteredConversations.map(renderConversationItem)
+              )}
+            </div>
+          </ScrollArea>
+        </TabsContent>
+        
+        <TabsContent value="saved" className="flex-1 p-0">
+          <ScrollArea className="h-full">
+            <div className="p-2 space-y-1">
+              {favoriteConversations.length === 0 ? (
+                <div className="text-center py-4 text-sm text-gray-500">
+                  Nenhuma conversa favorita
+                </div>
+              ) : (
+                favoriteConversations.map(renderConversationItem)
+              )}
+            </div>
+          </ScrollArea>
+        </TabsContent>
+      </Tabs>
+      
+      <div className="p-4 border-t">
+        <Button variant="outline" size="sm" className="w-full">
+          <Settings className="mr-2 h-4 w-4" />
+          Configurações
+        </Button>
+      </div>
     </div>
   )
 }
+
+export default ConversationSidebar

@@ -1,9 +1,3 @@
-/**
- * ChatInput
- *
- * Componente responsável pela entrada de texto e upload de arquivos no chat.
- * Inclui funcionalidades de envio de mensagens, upload de arquivos e contagem de tokens.
- */
 "use client"
 
 import { useState, useRef, useCallback } from "react"
@@ -13,7 +7,7 @@ import { estimateTokenCount } from "@/lib/ai-utils"
 import { useTextarea } from "@/hooks/use-textarea"
 
 interface ChatInputProps {
-  onSendMessage: (content: string, files?: File[]) => void
+  onSendMessage?: (content: string, files?: File[]) => void
   isLoading?: boolean
   disabled?: boolean
   isDragOver?: boolean
@@ -27,8 +21,8 @@ interface ChatInputProps {
 /**
  * Componente de entrada de chat
  */
-export default function ChatInput({
-  onSendMessage,
+export function ChatInput({
+  onSendMessage = () => {},
   isLoading = false,
   disabled = false,
   isDragOver = false,
@@ -204,3 +198,6 @@ export default function ChatInput({
     </div>
   )
 }
+
+// Adicionar export default para compatibilidade com importações existentes
+export default ChatInput
