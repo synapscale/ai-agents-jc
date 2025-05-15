@@ -43,6 +43,7 @@ export function ConversationSidebar({ className }: ConversationSidebarProps) {
   
   const [searchTerm, setSearchTerm] = React.useState('')
   
+  // Garante que sempre retorna array
   const safeConversations = Array.isArray(conversations) ? conversations : [];
   // Filtrar conversas favoritas
   const favoriteConversations = React.useMemo(() => {
