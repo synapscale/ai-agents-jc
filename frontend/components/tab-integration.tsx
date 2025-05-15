@@ -21,7 +21,7 @@ import {
   Settings,
   ArrowRight
 } from "lucide-react"
-import { useAppContext } from "@/contexts/app-context"
+import { useAppContext } from "@/context/app-context"
 
 interface TabIntegrationProps {
   currentTab: "canvas" | "chat" | "settings"
