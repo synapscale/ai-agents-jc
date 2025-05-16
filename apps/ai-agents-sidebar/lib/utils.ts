@@ -1,2 +1,1 @@
-// Arquivo migrado para packages/utils/utils.ts
-// Utilize apenas o util compartilhado.
+// Arquivo removido. Utilize o utilitário centralizado em packages/utils/shared-utils.ts

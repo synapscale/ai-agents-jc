@@ -20,6 +20,9 @@ importers:
       react:
         specifier: ^19
         version: 19.1.0
+      typescript:
+        specifier: ^5
+        version: 5.8.3
 
   apps/ai-agents-sidebar:
     dependencies:

@@ -1,2 +1,2 @@
-// Sidebar agora é importada de @ui/sidebar
-export { Sidebar } from '@ui/sidebar';
+// Sidebar agora é importada de @shared/ui/sidebar
+export { Sidebar } from '@shared/ui/sidebar';

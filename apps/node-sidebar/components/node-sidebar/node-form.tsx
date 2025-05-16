@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet"
-import type { ComponentBase, Loadable } from "@/types/core/component-base"
+import type { ComponentBase, Loadable } from "@types"
 
 /**
  * Form validation schema for node data

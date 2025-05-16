@@ -10,7 +10,7 @@
 
 import { lazy, Suspense } from "react"
 import { AppProvider } from "@/contexts/app-context"
-import { ThemeProvider } from '@theme/theme-provider';
+import { ThemeProvider } from '@shared/theme-provider';
 import { Sidebar } from "@ui/sidebar"
 import ChatInterface from "@/components/chat/chat-interface"
 

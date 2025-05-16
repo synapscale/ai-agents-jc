@@ -2,8 +2,8 @@
 
 import type React from "react"
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react"
-import type { AIModel, UserPreferences } from "@/types/chat"
-import type { Component } from "@/types/component-selector"
+import type { AIModel, UserPreferences } from "@types"
+import type { Component } from "@types"
 
 /**
  * Default model configuration

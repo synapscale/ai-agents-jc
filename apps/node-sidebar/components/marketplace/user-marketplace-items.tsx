@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { MarketplaceService } from "@/services/marketplace-service"
-import type { PublishRequest, ImportHistory } from "@/types/marketplace-types"
+import type { PublishRequest, ImportHistory, MarketplaceItem } from "@types"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -11,8 +11,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { Clock, FileDown, CheckCircle, XCircle } from "lucide-react"
 import { CardSkeleton } from "@/components/ui/skeletons/card-skeleton"
 import { MarketplaceItemCard } from "@/components/marketplace/marketplace-item-card"
-import type { MarketplaceItem } from "@/types/marketplace-types"
-import type { BaseComponentProps } from "@/types/component-interfaces"
+import type { BaseComponentProps } from "@types/component-interfaces"
 
 interface UserMarketplaceItemsProps extends BaseComponentProps {
   className?: string

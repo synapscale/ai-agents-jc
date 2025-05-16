@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { NODE_CATEGORIES, getNodesByCategory } from "@/types/node-types"
+import { NODE_CATEGORIES, getNodesByCategory } from "@types"
 
 /**
  * NodeSidebar Component
@@ -422,4 +422,4 @@ export function NodeSidebar() {
 
 // Sidebar agora é importada de @ui/sidebar
 // Arquivo mantido apenas para compatibilidade ou futura remoção.
-export { Sidebar as NodeSidebar } from '@ui/sidebar';
+export { Sidebar as NodeSidebar } from '@shared/ui/sidebar';

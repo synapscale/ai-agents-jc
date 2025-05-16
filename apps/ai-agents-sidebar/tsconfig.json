@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -24,7 +25,10 @@
       "@ui/*": ["../../packages/ui/*"],
       "@theme/*": ["../../packages/theme/*"],
       "@types/*": ["../../packages/types/*"],
-      "@hooks/*": ["../../packages/hooks/*"]
+      "@hooks/*": ["../../packages/hooks/*"],
+      "@shared/hooks": ["../../shared/hooks/index.ts"],
+      "@shared/ui": ["../../shared/ui/index.ts"],
+      "@shared/types": ["../../shared/types/index.ts"]
     }
   },
   "include": [

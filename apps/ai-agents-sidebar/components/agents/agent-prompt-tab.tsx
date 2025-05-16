@@ -1,8 +1,8 @@
 "use client"
 import { PromptEditor } from "@/components/agents/prompt-editor"
 import { PromptToolsBar } from "@/components/agents/prompt-tools-bar"
-import { PROMPT_TOOLS, PROMPT_TOOL_SNIPPETS } from "@/constants/agent-constants"
-import type { AgentPromptTabProps } from "@/types/component-params"
+import { PROMPT_TOOLS, PROMPT_TOOL_SNIPPETS } from "@constants"
+import type { AgentPromptTabProps } from "@types"
 
 /**
  * Component for the prompt tab of the agent form
