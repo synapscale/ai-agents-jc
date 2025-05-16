@@ -2,6 +2,14 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
+		"@themePkg/*": ["packages/theme/theme-provider/*"],
+		"@shared/*": ["shared/*"],
+		"@hooks/*": ["shared/hooks/*"],
+		"@ui/*": ["shared/ui/*"],
+		"@theme/*": ["shared/theme-provider/*"],
+		"@components/*": ["apps/ai-agents-sidebar/components/*"],
+		"@lib/*": ["apps/ai-agents-sidebar/lib/*"],
+		"@utils/*": ["shared/utils/*"],
       "@types/*": ["packages/types/*"],
       "@utils/*": ["packages/utils/*"],
       "@constants/*": ["packages/constants/*"],
@@ -20,3 +28,9 @@
     { "path": "./apps/node-sidebar" }
   ]
 }
+
+# Alias para shared
+
+
+# Alias para packages
+

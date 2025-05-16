@@ -2,10 +2,10 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { Sidebar } from "@ui/sidebar"
-import { SidebarProvider } from "@/components/ui/sidebar"
-import { Toaster } from "@/components/ui/toaster"
-import { ThemeProvider } from '@shared/theme-provider';
+import { Sidebar } from "../../../shared/ui/sidebar/Sidebar"
+import { SidebarProvider } from "../components/ui/sidebar"
+import { Toaster } from "../components/ui/toaster"
+import { ThemeProvider } from "../../../packages/theme/theme-provider/ThemeProvider";
 
 // Load Inter font with Latin subset
 const inter = Inter({
@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={inter.variable}>
       <body className={`${inter.className} bg-gray-50/50 overscroll-none`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+        <ThemeProvider>
           <SidebarProvider>
             <div className="flex h-[100dvh] overflow-hidden">
               <Sidebar />

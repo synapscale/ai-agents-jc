@@ -6,17 +6,17 @@ import { useRouter } from "next/navigation"
 /**
  * Root page component
  *
- * This component redirects users from the root path (/) to the agents page (/agentes)
- * using client-side navigation.
+ * Esta página redireciona do caminho raiz (/) para a página de configurações (/settings)
+ * usando navegação client-side.
  */
 export default function HomePage() {
   const router = useRouter()
 
   useEffect(() => {
-    router.replace("/agentes")
+    router.replace("/settings")
   }, [router])
 
-  // Return a minimal loading state while redirecting
+  // Retorna um loading mínimo enquanto redireciona
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">

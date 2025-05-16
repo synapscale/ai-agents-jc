@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { useLocalStorage } from "@/hooks/use-local-storage"
-import { Skeleton } from "@/components/ui/skeleton"
-import { AgentListHeader } from "@/components/agents/agent-list-header"
-import { AgentListFilters } from "@/components/agents/agent-list-filters"
-import { AgentListEmpty } from "@/components/agents/agent-list-empty"
-import { AgentCard } from "@/components/agents/agent-card"
-import { AgentDeleteDialog } from "@/components/agents/agent-delete-dialog"
+import { useLocalStorage } from "../../../../shared/hooks/use-local-storage"
+import { Skeleton } from "../../components/ui/skeleton"
+import { AgentListHeader } from "../../components/agents/agent-list-header"
+import { AgentListFilters } from "../../components/agents/agent-list-filters"
+import { AgentListEmpty } from "../../components/agents/agent-list-empty"
+import { AgentCard } from "../../components/agents/agent-card"
+import { AgentDeleteDialog } from "../../components/agents/agent-delete-dialog"
 import { formatDate } from "../../../../shared/utils/date-utils"
 import type { AgentType } from "../../../../shared/types/agent-types"
 
@@ -136,7 +136,7 @@ export default function AgentsPage() {
 				searchQuery={searchQuery}
 				statusFilter={statusFilter}
 				onSearchChange={setSearchQuery}
-				onStatusChange={(value) => setStatusFilter(value as "all" | "active" | "draft" | "archived")}
+				onStatusChange={(value: "all" | "active" | "draft" | "archived") => setStatusFilter(value)}
 			/>
 
 			{/* Agent list */}
@@ -144,7 +144,7 @@ export default function AgentsPage() {
 				<AgentListEmpty onCreateAgent={handleCreateAgent} />
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-					{filteredAgents.map((agent) => (
+					{filteredAgents.map((agent: AgentType) => (
 						<AgentCard
 							key={agent.id}
 							agent={agent}
@@ -159,7 +159,7 @@ export default function AgentsPage() {
 			{/* Delete confirmation dialog */}
 			<AgentDeleteDialog
 				agent={agentToDelete}
-				onOpenChange={(open) => !open && setAgentToDelete(null)}
+				onOpenChange={(open: boolean) => !open && setAgentToDelete(null)}
 				onConfirm={handleDeleteAgent}
 			/>
 		</div>
