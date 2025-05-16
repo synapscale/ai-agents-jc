@@ -10,10 +10,10 @@ import { AgentListEmpty } from "@/components/agents/agent-list-empty"
 import { AgentCard } from "@/components/agents/agent-card"
 import { AgentDeleteDialog } from "@/components/agents/agent-delete-dialog"
 import { formatDate } from "../../../../shared/utils/date-utils"
-import type { Agent } from "../../../../shared/types/agent-types"
+import type { AgentType } from "../../../../shared/types/agent-types"
 
 // Sample agents data
-const SAMPLE_AGENTS: Agent[] = [
+const SAMPLE_AGENTS: AgentType[] = [
 	{
 		id: "1",
 		name: "Assistente de Suporte Técnico",
@@ -48,11 +48,11 @@ const SAMPLE_AGENTS: Agent[] = [
 
 export default function AgentsPage() {
 	const router = useRouter()
-	const [agents, setAgents] = useLocalStorage<Agent[]>("agents", SAMPLE_AGENTS)
+	const [agents, setAgents] = useLocalStorage<AgentType[]>("agents", SAMPLE_AGENTS)
 	const [searchQuery, setSearchQuery] = useState("")
 	const [statusFilter, setStatusFilter] = useState<"all" | "active" | "draft" | "archived">("all")
 	const [isLoading, setIsLoading] = useState(true)
-	const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null)
+	const [agentToDelete, setAgentToDelete] = useState<AgentType | null>(null)
 
 	// Simulate loading state
 	useEffect(() => {
@@ -85,8 +85,8 @@ export default function AgentsPage() {
 	}
 
 	// Handle agent duplication
-	const handleDuplicateAgent = (agent: Agent) => {
-		const newAgent: Agent = {
+	const handleDuplicateAgent = (agent: AgentType) => {
+		const newAgent: AgentType = {
 			...agent,
 			id: Date.now().toString(),
 			name: `${agent.name} (Cópia)`,
