@@ -17,15 +17,14 @@ import { ChatHeader } from "./chat-header"
 import { MessagesArea } from "./messages-area"
 import ConversationSidebar from "./conversation-sidebar"
 import { useConversations } from "@/hooks/use-conversations"
-import { useApp } from "@/contexts/app-context"
-import { Notification } from "@/components/ui/notification"
-import type { Message, Conversation } from "@/types/chat"
+import { useUnifiedApp } from "@/contexts/unified-context"
 import { useToast } from "@/hooks/use-toast"
 import ModelSelectorSidebar from "./model-selector-sidebar"
 import ToolSelector from "./tool-selector"
 import PersonalitySelector from "./personality-selector"
 import PresetSelector from "./preset-selector"
 import type { BaseComponentProps, Status } from "@/types/component-types"
+import type { Message, Conversation } from "@/types/chat";
 import { ChevronDown } from "lucide-react"
 
 /**
@@ -86,6 +85,7 @@ export default function ChatInterface({
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
 
   // SECTION: Application context
+  const { main } = useUnifiedApp();
   const {
     selectedModel,
     selectedTool,
@@ -101,7 +101,7 @@ export default function ChatInterface({
     setLastAction,
     isComponentSelectorActive,
     setComponentSelectorActive,
-  } = useApp()
+  } = main
 
   // SECTION: Conversations hook
   const {
@@ -139,14 +139,16 @@ export default function ChatInterface({
    * Ensures a conversation exists when the component loads
    */
   useEffect(() => {
+    // Correção: só chama onConversationCreated se newConversation for Conversation, sem cast
     if (isLoaded && !currentConversationId && conversations.length === 0) {
       const newConversation = createConversation(initialMessages, {
         model: selectedModel.id,
         tool: selectedTool,
         personality: selectedPersonality,
-      })
-
-      onConversationCreated?.(newConversation)
+      });
+      if (typeof newConversation === 'object' && newConversation !== null && 'id' in newConversation && 'messages' in newConversation) {
+        onConversationCreated?.(newConversation);
+      }
     }
   }, [
     isLoaded,
@@ -307,10 +309,11 @@ export default function ChatInterface({
       model: selectedModel.id,
       tool: selectedTool,
       personality: selectedPersonality,
-    })
-
-    setIsSidebarOpen(false) // Close sidebar on mobile after creating a new conversation
-    onConversationCreated?.(newConversation)
+    });
+    setIsSidebarOpen(false);
+    if (typeof newConversation === 'object' && newConversation !== null && 'id' in newConversation && 'messages' in newConversation) {
+      onConversationCreated?.(newConversation);
+    }
   }, [createConversation, selectedModel, selectedTool, selectedPersonality, setIsSidebarOpen, onConversationCreated])
 
   /**
@@ -408,7 +411,7 @@ export default function ChatInterface({
         toast({
           title: "Files added",
           description: `${validFiles.length} file(s) added successfully.`,
-          variant: "success",
+          variant: "default",
         })
       }
 
@@ -417,7 +420,7 @@ export default function ChatInterface({
         toast({
           title: "Some files couldn't be added",
           description: `${invalidFiles.length} file(s) were rejected due to size or type restrictions.`,
-          variant: "warning",
+          variant: "destructive",
         })
       }
 
@@ -513,7 +516,7 @@ export default function ChatInterface({
           toast({
             title: "Files added",
             description: `${validFiles.length} file(s) added successfully.`,
-            variant: "success",
+            variant: "default",
           })
         }
 
@@ -522,7 +525,7 @@ export default function ChatInterface({
           toast({
             title: "Some files couldn't be added",
             description: `${invalidFiles.length} file(s) were rejected due to size or type restrictions.`,
-            variant: "warning",
+            variant: "destructive",
           })
         }
 
@@ -556,7 +559,7 @@ export default function ChatInterface({
    * Handles showing/hiding configuration options
    */
   const toggleConfig = useCallback(() => {
-    setShowConfig((prev) => !prev)
+    setShowConfig((prev: boolean) => !prev)
   }, [setShowConfig])
 
   /**
@@ -565,7 +568,7 @@ export default function ChatInterface({
    * Handles enabling/disabling focus mode
    */
   const toggleFocusMode = useCallback(() => {
-    setFocusMode((prev) => !prev)
+    setFocusMode((prev: boolean) => !prev)
   }, [setFocusMode])
 
   /**
@@ -574,7 +577,7 @@ export default function ChatInterface({
    * Handles showing/hiding the component selector
    */
   const toggleComponentSelector = useCallback(() => {
-    setComponentSelectorActive((prev) => !prev)
+    setComponentSelectorActive((prev: boolean) => !prev)
   }, [setComponentSelectorActive])
 
   // SECTION: Render
@@ -600,19 +603,15 @@ export default function ChatInterface({
     >
       {/* Chat header */}
       <ChatHeader
-        title={currentConversation?.title || "New Conversation"}
-        onTitleChange={handleUpdateConversationTitle}
+        currentConversation={currentConversation ?? undefined}
+        currentConversationId={currentConversationId}
         onNewConversation={handleNewConversation}
+        onUpdateConversationTitle={handleUpdateConversationTitle}
+        onDeleteConversation={deleteConversation}
         onExportConversation={handleExportConversation}
-        onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
+        onToggleSidebar={() => setIsSidebarOpen((prev: boolean) => !prev)}
         onToggleFocusMode={toggleFocusMode}
-        isFocusMode={focusMode}
-        isLoading={isLoading}
-        model={selectedModel.name}
-        showConfig={showConfig}
-        onToggleConfig={toggleConfig}
       />
-
       <div className="flex flex-1 overflow-hidden">
         {/* Conversation sidebar */}
         <ConversationSidebar
@@ -624,88 +623,30 @@ export default function ChatInterface({
             onConversationDeleted?.(id)
           }}
           onClearConversations={clearAllConversations}
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
+          onNewConversation={handleNewConversation}
         />
-
         {/* Main chat area */}
-        <div className="flex flex-col flex-1 overflow-hidden">
-          {/* Configuration panel */}
-          {showConfig && (
-            <div className="border-b border-border bg-card p-2 flex flex-wrap gap-2 items-center">
-              <ModelSelectorSidebar />
-              <ToolSelector />
-              <PersonalitySelector />
-              <PresetSelector />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="ml-auto"
-                onClick={toggleConfig}
-                aria-label="Close configuration panel"
-              >
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
-
-          {/* Messages area */}
+        <div className="flex flex-1 flex-col overflow-hidden">
           <MessagesArea
             messages={currentConversation?.messages || []}
             isLoading={isLoading}
             showTimestamps={showMessageTimestamps}
             showSenders={showMessageSenders}
-            focusMode={focusMode}
-            theme={theme}
             chatBackground={chatBackground}
+            theme={theme}
             messagesEndRef={messagesEndRef}
           />
-
-          {/* Chat input */}
-          <div className="p-4 border-t border-border">
-            <ChatInput
-              onSendMessage={handleSendMessage}
-              isLoading={isLoading}
-              disabled={isInputDisabled}
-              isDragOver={isDragOver}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              uploadedFiles={uploadedFiles}
-              onFileSelect={handleFileSelect}
-              onRemoveFile={handleRemoveFile}
-              enableFileUploads={enableFileUploads}
-              allowedFileTypes={allowedFileTypes}
-              maxFileSize={maxFileSize}
-              placeholder={inputPlaceholder}
-              maxHeight={maxInputHeight}
-            />
-          </div>
+          <ChatInput
+            onSendMessage={handleSendMessage}
+            isLoading={isLoading}
+            disabled={isInputDisabled}
+            isDragOver={isDragOver}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          />
         </div>
-
-        {/* Component selector sidebar */}
-        {isComponentSelectorActive && (
-          <div className="w-64 border-l border-border bg-card overflow-y-auto">
-            <div className="p-4">
-              <h3 className="text-lg font-semibold mb-2">Components</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Drag and drop components into the chat to reference them in your messages.
-              </p>
-              {/* Component list would go here */}
-            </div>
-          </div>
-        )}
       </div>
-
-      {/* Status notifications */}
-      {status === "error" && (
-        <Notification
-          title="Error"
-          description="An error occurred while processing your request."
-          variant="destructive"
-          className="fixed bottom-4 right-4"
-        />
-      )}
     </div>
   )
 }

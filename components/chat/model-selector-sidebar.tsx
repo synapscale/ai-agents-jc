@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useApp } from "@/contexts/app-context"
+import { useUnifiedApp } from "@/contexts/unified-context"
 import type { AIModel } from "@/types/chat"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Check } from "lucide-react"
@@ -55,7 +55,7 @@ export default function ModelSelectorSidebar() {
   const [searchQuery, setSearchQuery] = useState("")
 
   // App context
-  const { selectedModel, setSelectedModel, userPreferences, addRecentModel } = useApp()
+  const { selectedModel, setSelectedModel, userPreferences, addRecentModel } = useUnifiedApp()
 
   // Ensure userPreferences exists with default values if undefined
   const safeUserPreferences = useMemo(() => userPreferences || { recentModels: [] }, [userPreferences])

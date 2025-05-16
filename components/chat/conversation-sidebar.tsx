@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
-import { useApp } from "@/contexts/app-context"
+import { useUnifiedApp } from "@/contexts/unified-context"
 import type { Conversation } from "@/types/chat"
 
 interface ConversationSidebarProps {
@@ -29,7 +29,7 @@ export default function ConversationSidebar({
 }: ConversationSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [showSearch, setShowSearch] = useState(false)
-  const { setLastAction } = useApp()
+  const { setLastAction } = useUnifiedApp()
 
   // Formata a data para exibição
   const formatDate = (timestamp: number) => {
