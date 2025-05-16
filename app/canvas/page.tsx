@@ -1,14 +1,13 @@
 "use client"
 
-// import { CanvasArea } from "@/components/canvas/canvas-area"
+import { NodeSidebar } from "@/components/node-sidebar-clean/node-sidebar"
 
 /**
  * CanvasPage Component
  *
  * The main entry point for the canvas application that integrates
- * with the canvas area component in a responsive layout.
+ * with the node sidebar component in a responsive layout.
  */
 export default function CanvasPage() {
-  return <div>Canvas Temporariamente Desabilitado Para Testes</div> // <CanvasArea />
+  return <NodeSidebar />
 }
-
