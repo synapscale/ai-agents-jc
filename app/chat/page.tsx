@@ -1,5 +1,7 @@
 import React from 'react';
-import { ChatInterface } from '@/components/chat-v0';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ChatInterface } from '@/components/chat-interativo/chat-interface';
 
 export default function ChatPage() {
   return (

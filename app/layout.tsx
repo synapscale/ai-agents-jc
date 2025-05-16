@@ -1,26 +1,14 @@
-"use client";
-import "./globals.css";
+import React from 'react';
+import { Sidebar } from '@/components/sidebar';
+import { ChatInterface } from '@/components/chat-interativo/chat-interface';
 
-import { Providers } from "@/providers"
-import Sidebar from "@/components/sidebar"
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function Layout({ children }) {
   return (
-    <html lang="pt-BR">
-      <body>
-        <Providers>
-          <div className="flex h-screen overflow-hidden">
-            <Sidebar />
-            <main className="flex-1 overflow-auto">
-              {children}
-            </main>
-          </div>
-        </Providers>
-      </body>
-    </html>
-  )
+    <div className="flex h-screen">
+      <Sidebar />
+      <main className="flex-1 overflow-hidden">
+        {children}
+      </main>
+    </div>
+  );
 }

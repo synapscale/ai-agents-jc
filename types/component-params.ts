@@ -1,668 +1,426 @@
-/**
- * @file Comprehensive parameter definitions for components
- *
- * This file contains detailed type definitions for component parameters,
- * including documentation, validation rules, and contextual information.
- */
-
 import type React from "react"
-import type { Agent, BadgeItem } from "./agent-types"
-
 /**
- * Base properties that all components should support
- * @property className - CSS class to apply to the component
- * @property id - Unique identifier for the component (for accessibility and testing)
- * @property testId - Data attribute for testing purposes
- * @property ariaLabel - Accessible label for the component
- * @property ariaDescribedBy - ID of element that describes this component
+ * Base component parameters that all components should implement
+ * @template T - The type of the component's ref element
  */
-export interface BaseComponentProps {
+export interface BaseComponentParams<T = HTMLDivElement> {
   /**
-   * CSS class to apply to the component.
-   * Use this to override default styling or apply custom styles.
-   * @example "mt-4 text-center"
+   * CSS class name to apply to the component
+   * @default ""
    */
   className?: string
 
   /**
-   * Unique identifier for the component.
-   * Used for accessibility, form associations, and testing.
-   * @example "user-profile-form"
+   * Inline styles to apply to the component
+   */
+  style?: React.CSSProperties
+
+  /**
+   * Unique identifier for the component
    */
   id?: string
 
   /**
-   * Data attribute for testing purposes.
-   * Used by testing frameworks to locate components.
-   * @example "user-profile-submit-button"
-   */
-  testId?: string
-
-  /**
-   * Accessible label for the component.
-   * Used by screen readers when no visible label is present.
-   * @example "Submit form"
-   */
-  ariaLabel?: string
-
-  /**
-   * ID of element that describes this component.
-   * Creates an association with descriptive text for accessibility.
-   * @example "profile-form-description"
-   */
-  ariaDescribedBy?: string
-}
-
-/**
- * Properties for interactive components
- * @property disabled - Whether the component is disabled
- * @property loading - Whether the component is in a loading state
- * @property onClick - Function to call when the component is clicked
- * @property onFocus - Function to call when the component receives focus
- * @property onBlur - Function to call when the component loses focus
- * @property tabIndex - Tab order of the component
- */
-export interface InteractiveComponentProps extends BaseComponentProps {
-  /**
-   * Whether the component is disabled.
-   * When true, the component cannot be interacted with and appears visually disabled.
+   * Whether the component is disabled
    * @default false
    */
   disabled?: boolean
 
   /**
-   * Whether the component is in a loading state.
-   * When true, the component displays a loading indicator and may be disabled.
-   * @default false
+   * Data attributes to apply to the component
    */
-  loading?: boolean
+  dataAttributes?: Record<string, string>
 
   /**
-   * Function to call when the component is clicked.
-   * @param event - The click event
+   * Ref object for the component
    */
-  onClick?: (event: React.MouseEvent) => void
+  ref?: React.Ref<T>
 
   /**
-   * Function to call when the component receives focus.
-   * @param event - The focus event
+   * ARIA attributes for accessibility
    */
-  onFocus?: (event: React.FocusEvent) => void
+  ariaAttributes?: Record<string, string>
 
   /**
-   * Function to call when the component loses focus.
-   * @param event - The blur event
+   * Whether the component should be rendered with a focus ring when focused
+   * @default true
    */
-  onBlur?: (event: React.FocusEvent) => void
+  focusable?: boolean
 
   /**
-   * Tab order of the component.
-   * Controls the order in which elements receive focus when tabbing.
-   * @example 0
+   * Tab index for the component
    */
   tabIndex?: number
+
+  /**
+   * Whether the component should be rendered with a hover effect
+   * @default true
+   */
+  interactive?: boolean
 }
 
 /**
- * Properties for form field components
- * @property label - Label text for the field
- * @property name - Name attribute for the field
- * @property error - Error message to display
- * @property required - Whether the field is required
- * @property helperText - Additional text to help the user
- * @property labelClassName - CSS class for the label element
- * @property errorClassName - CSS class for the error message
- * @property helperTextClassName - CSS class for the helper text
- * @property hideLabel - Whether to visually hide the label (still accessible to screen readers)
- * @property headerRight - Content to display on the right side of the header
+ * Parameters for components that can be in a loading state
  */
-export interface FormFieldProps extends BaseComponentProps {
+export interface LoadingStateParams {
   /**
-   * Label text for the field.
-   * Displayed above the field and used for accessibility.
-   * @example "Email Address"
+   * Whether the component is in a loading state
+   * @default false
+   */
+  isLoading?: boolean
+
+  /**
+   * Text to display when the component is loading
+   * @default "Loading..."
+   */
+  loadingText?: string
+
+  /**
+   * Component to display when the component is loading
+   * If provided, loadingText will be ignored
+   */
+  loadingComponent?: React.ReactNode
+
+  /**
+   * Whether to disable the component when it's loading
+   * @default true
+   */
+  disableWhileLoading?: boolean
+
+  /**
+   * Animation to use for the loading state
+   * @default "pulse"
+   */
+  loadingAnimation?: "pulse" | "spin" | "bounce" | "none"
+}
+
+/**
+ * Parameters for components that can have a theme
+ */
+export interface ThemeableParams {
+  /**
+   * Theme variant for the component
+   * @default "default"
+   */
+  variant?: "default" | "primary" | "secondary" | "destructive" | "outline" | "ghost" | "link"
+
+  /**
+   * Size variant for the component
+   * @default "default"
+   */
+  size?: "sm" | "default" | "lg" | "xl"
+
+  /**
+   * Color scheme for the component
+   * @default "primary"
+   */
+  colorScheme?: "primary" | "secondary" | "success" | "warning" | "danger" | "info" | "neutral"
+
+  /**
+   * Whether the component should adapt to the current theme
+   * @default true
+   */
+  adaptToTheme?: boolean
+}
+
+/**
+ * Parameters for components that can have a tooltip
+ */
+export interface TooltipParams {
+  /**
+   * Tooltip text to display when hovering over the component
+   */
+  tooltip?: string
+
+  /**
+   * Delay before showing the tooltip in milliseconds
+   * @default 700
+   */
+  tooltipDelay?: number
+
+  /**
+   * Position of the tooltip relative to the component
+   * @default "top"
+   */
+  tooltipPosition?: "top" | "right" | "bottom" | "left"
+
+  /**
+   * Whether the tooltip should be disabled
+   * @default false
+   */
+  tooltipDisabled?: boolean
+}
+
+/**
+ * Parameters for components that can have an icon
+ */
+export interface IconParams {
+  /**
+   * Icon to display in the component
+   */
+  icon?: React.ReactNode
+
+  /**
+   * Position of the icon relative to the component's content
+   * @default "left"
+   */
+  iconPosition?: "left" | "right"
+
+  /**
+   * Size of the icon relative to the component's text
+   * @default "default"
+   */
+  iconSize?: "sm" | "default" | "lg"
+
+  /**
+   * Whether the icon should be animated
+   * @default false
+   */
+  animateIcon?: boolean
+
+  /**
+   * Type of animation for the icon
+   * @default "none"
+   */
+  iconAnimation?: "spin" | "pulse" | "bounce" | "none"
+}
+
+/**
+ * Parameters for components that can have a badge
+ */
+export interface BadgeParams {
+  /**
+   * Badge text to display on the component
+   */
+  badge?: string | number
+
+  /**
+   * Position of the badge relative to the component
+   * @default "top-right"
+   */
+  badgePosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right"
+
+  /**
+   * Color scheme for the badge
+   * @default "primary"
+   */
+  badgeColorScheme?: "primary" | "secondary" | "success" | "warning" | "danger" | "info" | "neutral"
+
+  /**
+   * Maximum value to display in the badge
+   * If the badge value is a number and exceeds this value, it will be displayed as "{maxBadgeValue}+"
+   * @default 99
+   */
+  maxBadgeValue?: number
+}
+
+/**
+ * Parameters for components that can have a label
+ */
+export interface LabelParams {
+  /**
+   * Label text to display for the component
    */
   label?: string
 
   /**
-   * Name attribute for the field.
-   * Used for form submission and accessibility.
-   * @example "email"
+   * Position of the label relative to the component
+   * @default "top"
    */
-  name?: string
+  labelPosition?: "top" | "right" | "bottom" | "left"
 
   /**
-   * Error message to display.
-   * Shown when the field has an error, typically after validation.
-   * @example "Please enter a valid email address"
-   */
-  error?: string
-
-  /**
-   * Whether the field is required.
-   * Adds a visual indicator and sets the HTML required attribute.
-   * @default false
-   */
-  required?: boolean
-
-  /**
-   * Additional text to help the user.
-   * Displayed below the field to provide guidance.
-   * @example "We'll never share your email with anyone else"
-   */
-  helperText?: string
-
-  /**
-   * CSS class for the label element.
-   * Use this to override default label styling.
-   * @example "text-lg font-bold"
-   */
-  labelClassName?: string
-
-  /**
-   * CSS class for the error message.
-   * Use this to override default error styling.
-   * @example "text-red-600 font-bold"
-   */
-  errorClassName?: string
-
-  /**
-   * CSS class for the helper text.
-   * Use this to override default helper text styling.
-   * @example "text-xs italic"
-   */
-  helperTextClassName?: string
-
-  /**
-   * Whether to visually hide the label.
-   * When true, the label is still accessible to screen readers.
+   * Whether the label should be hidden visually but still accessible to screen readers
    * @default false
    */
   hideLabel?: boolean
 
   /**
-   * Content to display on the right side of the header.
-   * Useful for adding actions or additional information.
-   * @example <Button>Reset</Button>
-   */
-  headerRight?: React.ReactNode
-}
-
-/**
- * Properties for the AgentFormHeader component
- * @property isNewAgent - Whether this is a new agent or an existing one
- * @property isSubmitting - Whether the form is currently submitting
- * @property onSubmit - Function to call when the submit button is clicked
- * @property onOpenTemplates - Function to call when the templates button is clicked
- * @property isValid - Whether the form is valid and can be submitted
- * @property title - Title to display in the header
- * @property backUrl - URL to navigate to when the back button is clicked
- * @property backText - Text to display in the back button
- * @property createButtonText - Text to display in the create button
- * @property saveButtonText - Text to display in the save button
- * @property templatesButtonText - Text to display in the templates button
- * @property headerContent - Additional content to display in the header
- * @property hideTemplatesButton - Whether to hide the templates button
- * @property hideBackButton - Whether to hide the back button
- * @property onBack - Function to call when the back button is clicked
- */
-export interface AgentFormHeaderProps extends BaseComponentProps {
-  /**
-   * Whether this is a new agent or an existing one.
-   * Controls the text of the submit button and potentially other UI elements.
-   * @required
-   */
-  isNewAgent: boolean
-
-  /**
-   * Whether the form is currently submitting.
-   * When true, the submit button shows a loading state and is disabled.
-   * @required
-   */
-  isSubmitting: boolean
-
-  /**
-   * Function to call when the submit button is clicked.
-   * Should trigger form validation and submission.
-   * @required
-   */
-  onSubmit: () => void
-
-  /**
-   * Function to call when the templates button is clicked.
-   * Should open the templates modal or navigate to templates page.
-   * @required
-   */
-  onOpenTemplates: () => void
-
-  /**
-   * Whether the form is valid and can be submitted.
-   * When false, the submit button is disabled.
-   * @required
-   */
-  isValid: boolean
-
-  /**
-   * Title to display in the header.
-   * If not provided, defaults based on isNewAgent.
-   * @default isNewAgent ? "Novo Agente" : "Editar Agente"
-   * @example "Criar Assistente de Vendas"
-   */
-  title?: string
-
-  /**
-   * URL to navigate to when the back button is clicked.
-   * Only used if onBack is not provided.
-   * @default "/agentes"
-   */
-  backUrl?: string
-
-  /**
-   * Text to display in the back button.
-   * @default "Voltar"
-   */
-  backText?: string
-
-  /**
-   * Text to display in the create button.
-   * Used when isNewAgent is true.
-   * @default "Criar Agente"
-   */
-  createButtonText?: string
-
-  /**
-   * Text to display in the save button.
-   * Used when isNewAgent is false.
-   * @default "Salvar Alterações"
-   */
-  saveButtonText?: string
-
-  /**
-   * Text to display in the templates button.
-   * @default "Templates"
-   */
-  templatesButtonText?: string
-
-  /**
-   * Additional content to display in the header.
-   * Rendered after the title.
-   * @example <Badge>Draft</Badge>
-   */
-  headerContent?: React.ReactNode
-
-  /**
-   * Whether to hide the templates button.
-   * @default false
-   */
-  hideTemplatesButton?: boolean
-
-  /**
-   * Whether to hide the back button.
-   * @default false
-   */
-  hideBackButton?: boolean
-
-  /**
-   * Function to call when the back button is clicked.
-   * If provided, overrides the default behavior of navigating to backUrl.
-   * Use this to handle unsaved changes confirmation.
-   * @param event - The click event
-   */
-  onBack?: (event: React.MouseEvent) => void
-}
-
-/**
- * Properties for the PromptEditor component
- * @property value - The current value of the prompt
- * @property onChange - Function to call when the value changes
- * @property onSelectTemplate - Function to call when a template is selected
- * @property error - Error message to display
- * @property minHeight - Minimum height of the editor
- * @property label - Label for the editor
- * @property required - Whether the field is required
- * @property onBlur - Function to call when the editor loses focus
- * @property placeholder - Placeholder text to display when the editor is empty
- * @property readOnly - Whether the editor is read-only
- * @property maxLength - Maximum length of the prompt
- * @property showCharCount - Whether to show the character count
- * @property autoFocus - Whether the editor should automatically receive focus
- * @property showTemplateButton - Whether to show the template button
- */
-export interface PromptEditorProps extends BaseComponentProps {
-  /**
-   * The current value of the prompt.
-   * This is the text content of the editor.
-   * @required
-   */
-  value: string
-
-  /**
-   * Function to call when the value changes.
-   * Called with the new value whenever the user types or pastes.
-   * @required
-   * @param value - The new value of the prompt
-   */
-  onChange: (value: string) => void
-
-  /**
-   * Function to call when a template is selected.
-   * If not provided, the template button will not be shown.
-   * @param content - The content of the selected template
-   */
-  onSelectTemplate?: () => void
-
-  /**
-   * Error message to display.
-   * Shown when the field has an error, typically after validation.
-   * @example "Prompt is required"
-   */
-  error?: string
-
-  /**
-   * Minimum height of the editor.
-   * Can be any valid CSS height value.
-   * @default "200px"
-   */
-  minHeight?: string
-
-  /**
-   * Label for the editor.
-   * Displayed above the editor and used for accessibility.
-   * @example "Agent Prompt"
-   */
-  label?: string
-
-  /**
-   * Whether the field is required.
-   * Adds a visual indicator and sets the HTML required attribute.
+   * Whether the label is required
    * @default false
    */
   required?: boolean
+}
 
+/**
+ * Parameters for components that can have a description
+ */
+export interface DescriptionParams {
   /**
-   * Function to call when the editor loses focus.
-   * Useful for triggering validation.
+   * Description text to display for the component
    */
-  onBlur?: () => void
+  description?: string
 
   /**
-   * Placeholder text to display when the editor is empty.
-   * Provides guidance to the user about what to enter.
-   * @default "# Title\n\nYou are an assistant that..."
+   * Position of the description relative to the component
+   * @default "bottom"
    */
-  placeholder?: string
+  descriptionPosition?: "top" | "right" | "bottom" | "left"
 
   /**
-   * Whether the editor is read-only.
-   * When true, the user cannot edit the content.
+   * Whether the description should be hidden visually but still accessible to screen readers
    * @default false
    */
-  readOnly?: boolean
+  hideDescription?: boolean
+}
 
+/**
+ * Parameters for components that can have an error state
+ */
+export interface ErrorStateParams {
   /**
-   * Maximum length of the prompt.
-   * If provided, shows a character count and limits input.
+   * Whether the component is in an error state
+   * @default false
    */
-  maxLength?: number
+  hasError?: boolean
 
   /**
-   * Whether to show the character count.
-   * Only applies if maxLength is provided.
+   * Error message to display when the component is in an error state
+   */
+  errorMessage?: string
+
+  /**
+   * Position of the error message relative to the component
+   * @default "bottom"
+   */
+  errorMessagePosition?: "top" | "right" | "bottom" | "left"
+}
+
+/**
+ * Parameters for components that can be animated
+ */
+export interface AnimationParams {
+  /**
+   * Whether the component should be animated
    * @default true
    */
-  showCharCount?: boolean
+  animated?: boolean
 
   /**
-   * Whether the editor should automatically receive focus.
+   * Animation to use for the component
+   * @default "fade"
+   */
+  animation?: "fade" | "slide" | "scale" | "none"
+
+  /**
+   * Duration of the animation in milliseconds
+   * @default 300
+   */
+  animationDuration?: number
+
+  /**
+   * Delay before starting the animation in milliseconds
+   * @default 0
+   */
+  animationDelay?: number
+
+  /**
+   * Easing function to use for the animation
+   * @default "ease"
+   */
+  animationEasing?: "ease" | "linear" | "ease-in" | "ease-out" | "ease-in-out"
+}
+
+/**
+ * Parameters for components that can have a responsive behavior
+ */
+export interface ResponsiveParams {
+  /**
+   * Whether the component should be hidden on mobile devices
+   * @default false
+   */
+  hideOnMobile?: boolean
+
+  /**
+   * Whether the component should be hidden on tablet devices
+   * @default false
+   */
+  hideOnTablet?: boolean
+
+  /**
+   * Whether the component should be hidden on desktop devices
+   * @default false
+   */
+  hideOnDesktop?: boolean
+
+  /**
+   * Whether the component should adapt its size based on the viewport
+   * @default true
+   */
+  responsive?: boolean
+}
+
+/**
+ * Parameters for components that can have a hover state
+ */
+export interface HoverStateParams {
+  /**
+   * Whether the component should show a hover effect
+   * @default true
+   */
+  showHoverEffect?: boolean
+
+  /**
+   * Color to use for the hover effect
+   * @default "primary"
+   */
+  hoverColor?: "primary" | "secondary" | "success" | "warning" | "danger" | "info" | "neutral"
+
+  /**
+   * Effect to use for the hover state
+   * @default "highlight"
+   */
+  hoverEffect?: "highlight" | "glow" | "scale" | "none"
+}
+
+/**
+ * Parameters for components that can have a focus state
+ */
+export interface FocusStateParams {
+  /**
+   * Whether the component should show a focus ring when focused
+   * @default true
+   */
+  showFocusRing?: boolean
+
+  /**
+   * Color to use for the focus ring
+   * @default "primary"
+   */
+  focusRingColor?: "primary" | "secondary" | "success" | "warning" | "danger" | "info" | "neutral"
+
+  /**
+   * Whether the component should be auto-focused when mounted
    * @default false
    */
   autoFocus?: boolean
+}
 
+/**
+ * Parameters for components that can have a transition
+ */
+export interface TransitionParams {
   /**
-   * Whether to show the template button.
-   * If false, the template button will not be shown regardless of onSelectTemplate.
+   * Whether the component should have a transition effect
    * @default true
    */
-  showTemplateButton?: boolean
-}
-
-/**
- * Properties for the BadgeList component
- * @property items - Array of badge items to display
- * @property onAdd - Function to call when the add button is clicked
- * @property onRemove - Function to call when a badge is removed
- * @property onEdit - Function to call when a badge is edited
- * @property addLabel - Label for the add button
- * @property maxItems - Maximum number of items allowed
- * @property emptyMessage - Message to display when there are no items
- * @property readOnly - Whether the list is read-only
- * @property addButtonVariant - Variant of the add button
- * @property badgeVariant - Variant of the badges
- * @property sortable - Whether the badges can be reordered
- * @property onReorder - Function to call when badges are reordered
- * @property confirmRemoval - Whether to confirm before removing a badge
- * @property removeBadgeAriaLabel - Accessible label for the remove badge button
- */
-export interface BadgeListProps extends BaseComponentProps {
-  /**
-   * Array of badge items to display.
-   * Each item must have an id and label.
-   * @required
-   */
-  items: BadgeItem[]
+  transition?: boolean
 
   /**
-   * Function to call when the add button is clicked.
-   * Should add a new badge to the items array.
-   * @required
+   * Duration of the transition in milliseconds
+   * @default 200
    */
-  onAdd: () => void
+  transitionDuration?: number
 
   /**
-   * Function to call when a badge is removed.
-   * Called with the id of the badge to remove.
-   * @required
-   * @param id - The id of the badge to remove
+   * Properties that should be transitioned
+   * @default ["all"]
    */
-  onRemove: (id: string) => void
+  transitionProperties?: string[]
 
   /**
-   * Function to call when a badge is edited.
-   * If provided, badges become editable on click.
-   * @param id - The id of the badge to edit
-   * @param newLabel - The new label for the badge
+   * Easing function to use for the transition
+   * @default "ease"
    */
-  onEdit?: (id: string, newLabel: string) => void
-
-  /**
-   * Label for the add button.
-   * Also used in aria-label with "Add " prefix.
-   * @default "Item"
-   */
-  addLabel?: string
-
-  /**
-   * Maximum number of items allowed.
-   * When reached, the add button is disabled.
-   * @default 10
-   */
-  maxItems?: number
-
-  /**
-   * Message to display when there are no items.
-   * @default "Nenhum item adicionado"
-   */
-  emptyMessage?: string
-
-  /**
-   * Whether the list is read-only.
-   * When true, badges cannot be removed or edited.
-   * @default false
-   */
-  readOnly?: boolean
-
-  /**
-   * Variant of the add button.
-   * Controls the visual style of the button.
-   * @default "outline"
-   */
-  addButtonVariant?: "default" | "outline" | "ghost" | "link"
-
-  /**
-   * Variant of the badges.
-   * Controls the visual style of the badges.
-   * @default "secondary"
-   */
-  badgeVariant?: "default" | "secondary" | "outline" | "destructive"
-
-  /**
-   * Whether the badges can be reordered.
-   * When true, badges can be dragged to change order.
-   * @default false
-   */
-  sortable?: boolean
-
-  /**
-   * Function to call when badges are reordered.
-   * Called with the new order of badge items.
-   * @param items - The new order of badge items
-   */
-  onReorder?: (items: BadgeItem[]) => void
-
-  /**
-   * Whether to confirm before removing a badge.
-   * When true, shows a confirmation dialog.
-   * @default false
-   */
-  confirmRemoval?: boolean
-
-  /**
-   * Accessible label for the remove badge button.
-   * If not provided, defaults to "Remove {label}".
-   * @example "Remove tag"
-   */
-  removeBadgeAriaLabel?: string
-}
-
-/**
- * Properties for the AgentBasicInfo component
- * @property name - Name of the agent
- * @property type - Type of the agent
- * @property model - Model of the agent
- * @property description - Description of the agent
- * @property status - Status of the agent
- * @property onChangeName - Function to call when the name changes
- * @property onChangeType - Function to call when the type changes
- * @property onChangeModel - Function to call when the model changes
- * @property onChangeDescription - Function to call when the description changes
- * @property onChangeStatus - Function to call when the status changes
- * @property errors - Object containing error messages for each field
- * @property readOnly - Whether the component is read-only
- * @property agentTypes - Array of available agent types
- * @property models - Array of available models
- */
-export interface AgentBasicInfoProps extends BaseComponentProps {
-  /**
-   * Name of the agent.
-   * Used as the primary identifier for the agent.
-   * @required
-   */
-  name: string
-
-  /**
-   * Type of the agent.
-   * Determines the agent's capabilities and behavior.
-   * @required
-   */
-  type: string
-
-  /**
-   * Model of the agent.
-   * The AI model used by the agent.
-   * @required
-   */
-  model: string
-
-  /**
-   * Description of the agent.
-   * Provides additional context about the agent's purpose.
-   * @required
-   */
-  description: string
-
-  /**
-   * Status of the agent.
-   * Indicates whether the agent is active, draft, etc.
-   * @required
-   */
-  status: string
-
-  /**
-   * Function to call when the name changes.
-   * @required
-   * @param name - The new name value
-   */
-  onChangeName: (name: string) => void
-
-  /**
-   * Function to call when the type changes.
-   * @required
-   * @param type - The new type value
-   */
-  onChangeType: (type: string) => void
-
-  /**
-   * Function to call when the model changes.
-   * @required
-   * @param model - The new model value
-   */
-  onChangeModel: (model: string) => void
-
-  /**
-   * Function to call when the description changes.
-   * @required
-   * @param description - The new description value
-   */
-  onChangeDescription: (description: string) => void
-
-  /**
-   * Function to call when the status changes.
-   * @required
-   * @param status - The new status value
-   */
-  onChangeStatus: (status: string) => void
-
-  /**
-   * Object containing error messages for each field.
-   * Keys should match field names.
-   * @example { name: "Name is required", description: "Description is too short" }
-   */
-  errors?: {
-    name?: string
-    type?: string
-    model?: string
-    description?: string
-    status?: string
-  }
-
-  /**
-   * Whether the component is read-only.
-   * When true, fields cannot be edited.
-   * @default false
-   */
-  readOnly?: boolean
-
-  /**
-   * Array of available agent types.
-   * Each type must have an id and name.
-   * @default [{ id: "assistant", name: "Assistente" }, { id: "chatbot", name: "Chatbot" }]
-   */
-  agentTypes?: Array<{ id: string; name: string }>
-
-  /**
-   * Array of available models.
-   * Each model must have an id and name.
-   * @default [{ id: "gpt-4", name: "GPT-4" }, { id: "gpt-3.5-turbo", name: "GPT-3.5 Turbo" }]
-   */
-  models?: Array<{ id: string; name: string }>
+  transitionEasing?: "ease" | "linear" | "ease-in" | "ease-out" | "ease-in-out"
 }

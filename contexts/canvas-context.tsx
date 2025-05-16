@@ -623,7 +623,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
   )
 
   /**
-   * Get all connections for a node
+   * Get connections for a node
    */
   const getNodeConnections = useCallback(
     (nodeId: string) => {
@@ -633,23 +633,57 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
   )
 
   /**
-   * Get node type definition for a node
+   * Get the type definition for a node
    */
-  const getNodeType = useCallback((nodeId: string) => {
-    const node = canvasNodes.find((n) => n.id === nodeId)
-    if (!node) return undefined
+  const getNodeType = useCallback(
+    (nodeId: string) => {
+      const node = canvasNodes.find((n) => n.id === nodeId)
+      if (!node) return undefined
 
-    return getNodeTypeById(node.type)
-  }, [canvasNodes])
+      return getNodeTypeById(node.type)
+    },
+    [canvasNodes],
+  )
 
-  // Context value
+  // Add keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Z for undo
+      if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+        e.preventDefault()
+        undo()
+      }
+
+      // Ctrl+Y or Ctrl+Shift+Z for redo
+      if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.key === "z" && e.shiftKey))) {
+        e.preventDefault()
+        redo()
+      }
+
+      // Delete to remove selected node or connection
+      if (e.key === "Delete" || e.key === "Backspace") {
+        if (selectedNode) {
+          e.preventDefault()
+          removeCanvasNode(selectedNode)
+        } else if (selectedConnection) {
+          e.preventDefault()
+          removeConnection(selectedConnection)
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [undo, redo, selectedNode, selectedConnection, removeCanvasNode, removeConnection])
+
+  // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(
     () => ({
       canvasNodes,
       connections,
       addCanvasNode,
       updateCanvasNode,
-      removeCanvasNode: removeCanvasNode,
+      removeCanvasNode,
       moveCanvasNode,
       selectedNode,
       setSelectedNode,
@@ -690,12 +724,19 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Hook to use the canvas context
+ * useCanvas Hook
+ *
+ * Custom hook to access the canvas context.
+ *
+ * @returns The canvas context value
+ * @throws Error if used outside of a CanvasProvider
  */
 export function useCanvas() {
   const context = useContext(CanvasContext)
+
   if (context === undefined) {
     throw new Error("useCanvas must be used within a CanvasProvider")
   }
+
   return context
 }

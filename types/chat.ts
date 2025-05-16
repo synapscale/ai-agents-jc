@@ -1,63 +1,96 @@
+import type React from "react"
 /**
- * Tipos para o Chat
- * 
- * Este arquivo contém definições de tipos para o sistema de chat.
+ * Tipos relacionados ao chat
+ *
+ * Este arquivo contém as definições de tipos para mensagens, modelos de IA,
+ * conversas e outras estruturas de dados relacionadas ao chat.
  */
 
 /**
- * Papel da mensagem
+ * Tipos de papel que uma mensagem pode ter
  */
-export type MessageRole = "user" | "assistant" | "system";
+export type MessageRole = "user" | "assistant" | "system"
 
 /**
- * Status da mensagem
+ * Status de processamento de uma mensagem
  */
-export type MessageStatus = "sending" | "sent" | "error";
+export type MessageStatus = "sending" | "sent" | "error" | "pending" | "complete"
 
 /**
- * Categoria do modelo de IA
+ * Tipos de reação que uma mensagem pode receber
  */
-export type ModelCategory = "text" | "image" | "audio" | "video" | "multimodal";
+export type MessageReaction = "like" | "dislike" | null
 
 /**
- * Capacidades do modelo de IA
- */
-export interface ModelCapabilities {
-  /** Suporte a imagens */
-  images?: boolean;
-  /** Suporte a áudio */
-  audio?: boolean;
-  /** Suporte a vídeo */
-  video?: boolean;
-  /** Suporte a ferramentas/funções */
-  tools?: boolean;
-  /** Suporte a código */
-  code?: boolean;
-  /** Tamanho máximo do contexto (em tokens) */
-  maxContextLength?: number;
-}
-
-/**
- * Representa uma mensagem na conversa
+ * Representa uma mensagem no chat
  */
 export interface Message {
   /** ID único da mensagem - formato recomendado: `msg_${timestamp}` */
-  id: string;
-  /** Papel da mensagem (usuário, assistente, sistema) */
-  role: MessageRole;
-  /** Conteúdo da mensagem */
-  content: string;
+  id: string
+
+  /** Papel do remetente da mensagem */
+  role: MessageRole
+
+  /** Conteúdo da mensagem - pode conter markdown e referências a componentes */
+  content: string
+
+  /** Modelo de IA usado para gerar a mensagem (apenas para mensagens do assistente) */
+  model?: string
+
+  /** Indica se a mensagem representa um erro */
+  isError?: boolean
+
+  /** Status de processamento da mensagem */
+  status?: MessageStatus
+
   /** Timestamp de quando a mensagem foi criada (em milissegundos) */
-  timestamp: number;
-  /** Status da mensagem */
-  status: MessageStatus;
-  /** Arquivos anexados à mensagem */
-  files?: {
-    name: string;
-    type: string;
-    size: number;
-    url: string;
-  }[];
+  timestamp?: number
+
+  /** Reação do usuário à mensagem */
+  reaction?: MessageReaction
+
+  /** Metadados adicionais da mensagem */
+  metadata?: Record<string, any>
+}
+
+/**
+ * Categorias de modelos de IA
+ */
+export type ModelCategory = "text" | "image" | "audio" | "video" | "multimodal"
+
+/**
+ * Capacidades de um modelo de IA
+ */
+export interface ModelCapabilities {
+  /** Suporta geração de imagens */
+  imageGeneration?: boolean
+
+  /** Suporta análise de imagens */
+  imageAnalysis?: boolean
+
+  /** Suporta geração de áudio */
+  audioGeneration?: boolean
+
+  /** Suporta transcrição de áudio */
+  audioTranscription?: boolean
+
+  /** Suporta geração de vídeo */
+  videoGeneration?: boolean
+
+  /** Suporta análise de vídeo */
+  videoAnalysis?: boolean
+
+  /** Suporta chamadas de ferramentas/funções */
+  toolCalling?: boolean
+
+  /** Suporta contexto de longa duração */
+  longContext?: boolean
+
+  /** Suporta fine-tuning */
+  fineTuning?: boolean
+
+  /** Tamanho máximo do contexto (em tokens) */
+  maxContextLength?: number
 }
 
 /**
@@ -65,66 +98,89 @@ export interface Message {
  */
 export interface AIModel {
   /** ID único do modelo - deve ser consistente com a API */
-  id: string;
+  id: string
+
   /** Nome de exibição do modelo */
-  name: string;
+  name: string
+
   /** Descrição do modelo e suas capacidades */
-  description?: string;
+  description?: string
+
   /** Provedor do modelo (ex: "openai", "anthropic", "google", "mistral") */
-  provider: string;
+  provider: string
+
   /** Categoria principal do modelo */
-  category?: ModelCategory;
+  category?: ModelCategory
+
   /** Capacidades específicas do modelo */
-  capabilities?: ModelCapabilities;
+  capabilities?: ModelCapabilities
+
   /** Indica se o modelo é novo (adicionado recentemente) */
-  isNew?: boolean;
+  isNew?: boolean
+
   /** Indica se o modelo tem contexto infinito */
-  isInfinite?: boolean;
+  isInfinite?: boolean
+
   /** Indica se o modelo está em beta */
-  isBeta?: boolean;
+  isBeta?: boolean
+
   /** Indica se o modelo foi atualizado recentemente */
-  isUpdated?: boolean;
+  isUpdated?: boolean
+
   /** URL do ícone do modelo (opcional) */
-  iconUrl?: string;
+  iconUrl?: string
+
   /** Custo estimado por 1K tokens de entrada */
-  costPerInputToken?: number;
+  costPerInputToken?: number
+
   /** Custo estimado por 1K tokens de saída */
-  costPerOutputToken?: number;
+  costPerOutputToken?: number
+
   /** Metadados adicionais específicos do modelo */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, any>
 }
 
 /**
  * Tipos de ferramentas disponíveis
  */
-export type ToolType = "search" | "database" | "file" | "api" | "calculator" | "custom";
+export type ToolType = "search" | "database" | "file" | "api" | "calculator" | "custom"
 
 /**
  * Representa uma ferramenta que pode ser usada pelo assistente
  */
 export interface Tool {
   /** ID único da ferramenta */
-  id: string;
+  id: string
+
   /** Nome de exibição da ferramenta */
-  name: string;
+  name: string
+
   /** Descrição da ferramenta e suas capacidades */
-  description?: string;
+  description?: string
+
   /** Tipo da ferramenta */
-  type: ToolType;
+  type: ToolType
+
   /** Ícone da ferramenta (componente React) */
-  icon: React.ReactNode;
+  icon: React.ReactNode
+
   /** Categoria da ferramenta para agrupamento */
-  category?: string;
+  category?: string
+
   /** Indica se a ferramenta é nova */
-  isNew?: boolean;
+  isNew?: boolean
+
   /** Indica se a ferramenta é paga */
-  isPaid?: boolean;
+  isPaid?: boolean
+
   /** Indica se a ferramenta está em período de teste */
-  isTrial?: boolean;
+  isTrial?: boolean
+
   /** Parâmetros necessários para a ferramenta */
-  parameters?: Record<string, any>;
+  parameters?: Record<string, any>
+
   /** Metadados adicionais da ferramenta */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, any>
 }
 
 /**
@@ -132,17 +188,22 @@ export interface Tool {
  */
 export interface Personality {
   /** ID único da personalidade */
-  id: string;
+  id: string
+
   /** Nome de exibição da personalidade */
-  name: string;
+  name: string
+
   /** Descrição da personalidade */
-  description: string;
+  description: string
+
   /** Instrução de sistema que define a personalidade */
-  systemPrompt?: string;
+  systemPrompt?: string
+
   /** Ícone da personalidade (opcional) */
-  icon?: React.ReactNode;
+  icon?: React.ReactNode
+
   /** Metadados adicionais da personalidade */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, any>
 }
 
 /**
@@ -150,32 +211,43 @@ export interface Personality {
  */
 export interface Conversation {
   /** ID único da conversa - formato recomendado: `conv_${timestamp}` */
-  id: string;
+  id: string
+
   /** Título da conversa */
-  title: string;
+  title: string
+
   /** Lista de mensagens na conversa */
-  messages: Message[];
+  messages: Message[]
+
   /** Timestamp de quando a conversa foi criada (em milissegundos) */
-  createdAt: number;
+  createdAt: number
+
   /** Timestamp da última atualização da conversa (em milissegundos) */
-  updatedAt: number;
+  updatedAt: number
+
   /** Modelo de IA usado na conversa */
-  model?: string;
+  model?: string
+
   /** Metadados adicionais da conversa */
   metadata?: {
     /** Modelo de IA usado */
-    model?: string;
+    model?: string
+
     /** Ferramenta usada */
-    tool?: string;
+    tool?: string
+
     /** Personalidade do assistente */
-    personality?: string;
+    personality?: string
+
     /** Tags para categorização */
-    tags?: string[];
+    tags?: string[]
+
     /** Indicador de favorito */
-    isFavorite?: boolean;
+    isFavorite?: boolean
+
     /** Outros metadados */
-    [key: string]: any;
-  };
+    [key: string]: any
+  }
 }
 
 /**
@@ -183,21 +255,21 @@ export interface Conversation {
  */
 export interface ChatPreset {
   /** ID único do preset */
-  id: string;
+  id: string
   /** Nome do preset */
-  name: string;
+  name: string
   /** Descrição do preset */
-  description?: string;
+  description?: string
   /** Modelo de IA usado */
-  model: string;
+  model: string
   /** Ferramenta usada */
-  tool: string;
+  tool: string
   /** Personalidade do assistente */
-  personality: string;
+  personality: string
   /** Timestamp de quando o preset foi criado (em milissegundos) */
-  createdAt: number;
+  createdAt: number
   /** Se o preset é um favorito */
-  isFavorite: boolean;
+  isFavorite: boolean
 }
 
 /**
@@ -205,33 +277,44 @@ export interface ChatPreset {
  */
 export interface UserPreferences {
   /** Tema da interface (claro ou escuro) */
-  theme: "light" | "dark" | "system";
+  theme: "light" | "dark" | "system"
+
   /** Modelos recentemente usados */
-  recentModels: AIModel[];
+  recentModels: AIModel[]
+
   /** Ferramentas recentemente usadas */
-  recentTools: string[];
+  recentTools: string[]
+
   /** Personalidades recentemente usadas */
-  recentPersonalities: string[];
+  recentPersonalities: string[]
+
   /** Modelos favoritos */
-  favoriteModels: string[];
+  favoriteModels: string[]
+
   /** Conversas favoritas */
-  favoriteConversations: string[];
+  favoriteConversations: string[]
+
   /** Configurações de interface */
   interface: {
     /** Mostrar configurações por padrão */
-    showConfigByDefault: boolean;
+    showConfigByDefault: boolean
+
     /** Tamanho da fonte */
-    fontSize: "small" | "medium" | "large";
+    fontSize: "small" | "medium" | "large"
+
     /** Densidade da interface */
-    density: "compact" | "comfortable" | "spacious";
-  };
+    density: "compact" | "comfortable" | "spacious"
+  }
+
   /** Configurações de notificação */
   notifications: {
     /** Notificações sonoras */
-    sound: boolean;
+    sound: boolean
+
     /** Notificações de desktop */
-    desktop: boolean;
-  };
+    desktop: boolean
+  }
+
   /** Outras preferências */
-  [key: string]: any;
+  [key: string]: any
 }

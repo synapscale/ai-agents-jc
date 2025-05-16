@@ -62,12 +62,9 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
       }
     }
 
-    if (typeof window !== "undefined") { // Add check for window object
-        window.addEventListener("storage", handleStorageChange)
-        return () => window.removeEventListener("storage", handleStorageChange)
-    }
+    window.addEventListener("storage", handleStorageChange)
+    return () => window.removeEventListener("storage", handleStorageChange)
   }, [key])
 
   return [storedValue, setValue]
 }
-

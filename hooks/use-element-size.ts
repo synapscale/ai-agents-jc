@@ -7,7 +7,7 @@ interface Size {
   height: number
 }
 
-export function useElementSize<T extends HTMLElement = HTMLDivElement>(): [(node: T | null) => void, Size] {
+export function useElementSize<T extends HTMLElement = HTMLDivElement>(): [RefObject<T>, Size] {
   const [ref, setRef] = useState<T | null>(null)
   const [size, setSize] = useState<Size>({
     width: 0,
@@ -37,7 +37,5 @@ export function useElementSize<T extends HTMLElement = HTMLDivElement>(): [(node
     }
   }, [ref, handleSize])
 
-  // Modificado para retornar a função de callback do ref diretamente
-  return [setRef, size]
+  return [{ current: ref } as RefObject<T>, size]
 }
-

@@ -1,265 +1,130 @@
-/**
- * Sidebar Component
- *
- * Componente de barra lateral principal que fornece navegação para todas as áreas do aplicativo.
- * Inclui seções para funcionalidades principais, desenvolvimento, workflows recentes e configurações.
- */
-"use client"
+import React from 'react';
 
-import { useCallback, useEffect, useState } from "react"
-import { usePathname } from "next/navigation"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import {
-  LayoutGrid,
-  Menu,
-  Settings,
-  History,
-  BookOpen,
-  Box,
-  ShoppingBag,
-  BookTemplate,
-  FileCode,
-  Variable,
-  MessageSquare,
-  Workflow,
-  Layers,
-  PanelLeft,
-} from "lucide-react"
-
-/**
- * Componente de barra lateral principal.
- *
- * @returns Componente React
- */
-export default function Sidebar() {
-  const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(false)
-
-  // Alterna o estado de abertura da barra lateral
-  const toggle = useCallback(() => {
-    setIsOpen((prev) => !prev)
-  }, [])
-
-  // Fecha a barra lateral em dispositivos móveis quando o caminho muda
-  useEffect(() => {
-    setIsOpen(false)
-  }, [pathname])
+export function Sidebar() {
+  const menuItems = [
+    {
+      title: 'Principal',
+      items: [
+        { name: 'Dashboard', icon: 'dashboard', href: '/dashboard' },
+        { name: 'Agentes De IA', icon: 'agents', href: '/agents' },
+      ]
+    },
+    {
+      title: 'Ferramentas',
+      items: [
+        { name: 'Canvas', icon: 'canvas', href: '/canvas' },
+        { name: 'Prompts', icon: 'prompts', href: '/prompts' },
+        { name: 'Chat', icon: 'chat', href: '/chat', active: true },
+      ]
+    },
+    {
+      title: 'Configurações',
+      items: [
+        { name: 'Configurações', icon: 'settings', href: '/settings' },
+      ]
+    }
+  ];
 
   return (
-    <>
-      {/* Overlay para dispositivos móveis */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
-          onClick={toggle}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Barra lateral principal */}
-      <div
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r bg-card transition-transform duration-300 ease-in-out lg:static lg:z-0",
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        )}
-      >
-        {/* Cabeçalho da barra lateral */}
-        <div className="flex h-14 items-center border-b px-4">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Workflow className="h-6 w-6" />
-            <span>AI Agents JC</span>
-          </Link>
+    <div className="w-60 h-full border-r bg-white flex flex-col">
+      <div className="p-4 flex items-center space-x-2">
+        <div className="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center text-white font-bold">
+          JC
         </div>
-
-        {/* Conteúdo principal da barra lateral */}
-        <div className="flex-1 overflow-auto">
-          <div className="px-3 py-2">
-            <h3 className="mb-2 px-4 text-xs font-semibold text-muted-foreground" id="main-nav-heading">
-              Principal
-            </h3>
-            <div className="space-y-1" role="navigation" aria-labelledby="main-nav-heading">
-              <NavItem
-                href="/canvas"
-                icon={<LayoutGrid className="h-5 w-5" />}
-                label="Editor de Workflow"
-                pathname={pathname}
-              />
-              <NavItem
-                href="/chat"
-                icon={<MessageSquare className="h-5 w-5" />}
-                label="Chat Interativo"
-                pathname={pathname}
-              />
-              <NavItem
-                href="/marketplace"
-                icon={<ShoppingBag className="h-5 w-5" />}
-                label="Marketplace"
-                pathname={pathname}
-              />
-            </div>
-          </div>
-          
-          <div className="px-3 py-2">
-            <h3 className="mb-2 px-4 text-xs font-semibold text-muted-foreground" id="resources-nav-heading">
-              Recursos
-            </h3>
-            <div className="space-y-1" role="navigation" aria-labelledby="resources-nav-heading">
-              <NavItem
-                href="/templates"
-                icon={<BookTemplate className="h-5 w-5" />}
-                label="Templates"
-                pathname={pathname}
-              />
-              <NavItem
-                href="/templates/code-templates"
-                icon={<FileCode className="h-5 w-5" />}
-                label="Templates de Código"
-                pathname={pathname}
-              />
-              <NavItem
-                href="/variables"
-                icon={<Variable className="h-5 w-5" />}
-                label="Variáveis"
-                pathname={pathname}
-              />
-            </div>
-          </div>
-          
-          <div className="px-3 py-2">
-            <h3 className="mb-2 px-4 text-xs font-semibold text-muted-foreground" id="dev-nav-heading">
-              Desenvolvimento
-            </h3>
-            <div className="space-y-1" role="navigation" aria-labelledby="dev-nav-heading">
-              <NavItem
-                href="/executions"
-                icon={<History className="h-5 w-5" />}
-                label="Execuções"
-                pathname={pathname}
-              />
-              <NavItem 
-                href="/docs" 
-                icon={<BookOpen className="h-5 w-5" />} 
-                label="Documentação" 
-                pathname={pathname} 
-              />
-              <NavItem
-                href="/node-definitions"
-                icon={<Box className="h-5 w-5" />}
-                label="Templates de Nós"
-                pathname={pathname}
-              />
-              <NavItem
-                href="/components"
-                icon={<Layers className="h-5 w-5" />}
-                label="Componentes"
-                pathname={pathname}
-              />
-            </div>
-          </div>
-          
-          <Separator />
-          
-          {/* Área rolável para lista de workflows */}
-          <div className="px-3 py-2">
-            <h3 className="mb-2 px-4 text-xs font-semibold text-muted-foreground" id="recent-workflows-heading">
-              Workflows Recentes
-            </h3>
-            <ScrollArea className="h-[200px]">
-              <div className="space-y-1" role="list" aria-labelledby="recent-workflows-heading">
-                {[
-                  "Automação de Marketing",
-                  "Processamento de Dados",
-                  "Integração de API",
-                  "Sequência de Email",
-                  "Jornada do Cliente",
-                ].map((workflow, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center rounded-md px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
-                    role="listitem"
-                  >
-                    {workflow}
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
-        </div>
-        
-        {/* Rodapé da barra lateral */}
-        <div className="mt-auto p-4">
-          <Separator className="mb-4" />
-          <NavItem 
-            href="/settings" 
-            icon={<Settings className="h-5 w-5" />} 
-            label="Configurações" 
-            pathname={pathname} 
-          />
+        <div>
+          <h1 className="font-bold">Agente AI</h1>
+          <p className="text-xs text-gray-500">Canvas</p>
         </div>
       </div>
-      
-      {/* Botão de alternância móvel - fixo no canto inferior esquerdo */}
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={toggle}
-        className="fixed bottom-4 left-4 z-40 rounded-full shadow-md lg:hidden"
-        aria-label="Abrir menu de navegação"
-      >
-        <Menu className="h-5 w-5" aria-hidden="true" />
-        <span className="sr-only">Alternar barra lateral</span>
-      </Button>
-    </>
-  )
+
+      <nav className="flex-1 overflow-y-auto p-2">
+        {menuItems.map((section) => (
+          <div key={section.title} className="mb-6">
+            <h2 className="text-xs font-medium text-gray-500 px-3 mb-2">{section.title}</h2>
+            <ul>
+              {section.items.map((item) => (
+                <li key={item.name}>
+                  <a
+                    href={item.href}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm ${
+                      item.active ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className="w-5 h-5 flex items-center justify-center">
+                      {getIcon(item.icon)}
+                    </span>
+                    <span>{item.name}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+
+      <div className="p-4 border-t flex items-center space-x-2">
+        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+          U
+        </div>
+        <div>
+          <p className="text-sm font-medium">Usuário</p>
+          <p className="text-xs text-gray-500">Online</p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-/**
- * Componente de Item de Navegação
- *
- * Renderiza um único link de navegação com estilo de estado ativo.
- *
- * @param props - Propriedades do componente
- * @param props.href - O destino do link
- * @param props.icon - O ícone a ser exibido
- * @param props.label - O rótulo de texto
- * @param props.pathname - O caminho atual para comparação de estado ativo
- * @returns Um link de navegação estilizado
- */
-interface NavItemProps {
-  href: string
-  icon: React.ReactNode
-  label: string
-  pathname: string
-}
-
-/**
- * Componente de item de navegação.
- *
- * @param props - Propriedades do componente
- * @param props.href - Destino do link
- * @param props.icon - Ícone a ser exibido
- * @param props.label - Texto do link
- * @param props.pathname - Caminho atual para determinar estado ativo
- */
-function NavItem({ href, icon, label, pathname }: NavItemProps) {
-  // Determina se este item de navegação está ativo com base no caminho atual
-  const isActive = pathname === href || (href !== "/" && pathname.startsWith(href))
-  
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-        isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground",
-      )}
-      aria-current={isActive ? "page" : undefined}
-    >
-      {icon}
-      {label}
-    </Link>
-  )
+function getIcon(name) {
+  switch (name) {
+    case 'dashboard':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+      );
+    case 'agents':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      );
+    case 'canvas':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="9" y1="21" x2="9" y2="9"></line>
+        </svg>
+      );
+    case 'prompts':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+      );
+    case 'chat':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+      );
+    case 'settings':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      );
+    default:
+      return null;
+  }
 }

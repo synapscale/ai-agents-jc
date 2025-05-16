@@ -3,37 +3,8 @@
 import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
-// import { MarketplaceService } from "@/services/marketplace-service" // This will need to be created or path adjusted
+import { MarketplaceService } from "@/services/marketplace-service"
 import type { MarketplaceItem } from "@/types/marketplace-types"
-
-// Placeholder for MarketplaceService until it's integrated
-const MarketplaceService = {
-  importItem: async (itemId: string) => {
-    console.log(`Importing item ${itemId}`)
-    // Simulate API call
-    return new Promise(resolve => setTimeout(() => resolve(true), 1000))
-  },
-  importFromFile: async (fileContent: string) => {
-    console.log("Importing from file")
-    // Simulate API call
-    return new Promise(resolve => setTimeout(() => resolve(true), 1000))
-  },
-  addItemToCollection: async (collectionId: string, itemId: string, itemType: string) => {
-    console.log(`Adding item ${itemId} of type ${itemType} to collection ${collectionId}`)
-    // Simulate API call
-    return new Promise(resolve => setTimeout(() => resolve(true), 1000))
-  },
-  removeItemFromCollection: async (collectionId: string, itemId: string) => {
-    console.log(`Removing item ${itemId} from collection ${collectionId}`)
-    // Simulate API call
-    return new Promise(resolve => setTimeout(() => resolve(true), 1000))
-  },
-  deleteCollection: async (collectionId: string) => {
-    console.log(`Deleting collection ${collectionId}`)
-    // Simulate API call
-    return new Promise(resolve => setTimeout(() => resolve(true), 1000))
-  },
-}
 
 export function useMarketplace() {
   const router = useRouter()
@@ -52,7 +23,7 @@ export function useMarketplace() {
           description: `${item.type === "skill" ? "Skill" : "Node"} importado com sucesso!`,
         })
         return true
-      } catch (error: any) {
+      } catch (error) {
         console.error("Erro ao importar item:", error)
         toast({
           title: "Erro",
@@ -79,7 +50,7 @@ export function useMarketplace() {
           description: "Item importado com sucesso!",
         })
         return true
-      } catch (error: any) {
+      } catch (error) {
         console.error("Erro ao importar arquivo:", error)
         toast({
           title: "Erro",
@@ -105,7 +76,7 @@ export function useMarketplace() {
           description: "Item adicionado à coleção com sucesso!",
         })
         return true
-      } catch (error: any) {
+      } catch (error) {
         console.error("Erro ao adicionar item à coleção:", error)
         toast({
           title: "Erro",
@@ -132,7 +103,7 @@ export function useMarketplace() {
           })
         }
         return success
-      } catch (error: any) {
+      } catch (error) {
         console.error("Erro ao remover item da coleção:", error)
         toast({
           title: "Erro",
@@ -157,7 +128,7 @@ export function useMarketplace() {
           })
         }
         return success
-      } catch (error: any) {
+      } catch (error) {
         console.error("Erro ao excluir coleção:", error)
         toast({
           title: "Erro",
@@ -180,4 +151,3 @@ export function useMarketplace() {
     deleteCollection,
   }
 }
-
