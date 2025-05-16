@@ -2,86 +2,134 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontalIcon, EditIcon, TrashIcon } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { 
+  MoreHorizontalIcon, 
+  EditIcon, 
+  TrashIcon, 
+  PlayIcon,
+  StarIcon
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface AgentCardProps {
   agent: {
     id: string;
     name: string;
     description: string;
-    model: string;
     type: string;
+    model: string;
     tags: string[];
-    createdAt: Date;
-    updatedAt: Date;
+    isActive?: boolean;
+    isFavorite?: boolean;
+    lastUsed?: Date;
   };
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
-  onView: (id: string) => void;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
+  onView?: (id: string) => void;
+  onToggleActive?: (id: string, active: boolean) => void;
+  onToggleFavorite?: (id: string, favorite: boolean) => void;
 }
 
-export function AgentCard({ agent, onEdit, onDelete, onView }: AgentCardProps) {
+export function AgentCard({
+  agent,
+  onEdit,
+  onDelete,
+  onView,
+  onToggleActive,
+  onToggleFavorite
+}: AgentCardProps) {
   return (
-    <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer" onClick={() => onView(agent.id)}>
+    <Card className="p-4 hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-medium text-lg">{agent.name}</h3>
-          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{agent.description}</p>
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium">{agent.name}</h3>
+            {agent.isActive && (
+              <Badge variant="success" className="text-xs">Ativo</Badge>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+            {agent.description || "Sem descrição"}
+          </p>
         </div>
         
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-            <Button variant="ghost" size="icon">
-              <MoreHorizontalIcon className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              onView(agent.id);
-            }}>
-              Visualizar
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              onEdit(agent.id);
-            }}>
-              <EditIcon className="h-4 w-4 mr-2" />
-              Editar
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              className="text-destructive"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(agent.id);
-              }}
+        <div className="flex items-center gap-1">
+          {onToggleFavorite && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-8 w-8 ${agent.isFavorite ? 'text-yellow-500' : ''}`}
+              onClick={() => onToggleFavorite(agent.id, !agent.isFavorite)}
             >
-              <TrashIcon className="h-4 w-4 mr-2" />
-              Excluir
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex flex-wrap gap-2">
-          {agent.tags.slice(0, 3).map((tag, index) => (
-            <Badge key={index} variant="secondary">{tag}</Badge>
-          ))}
-          {agent.tags.length > 3 && (
-            <Badge variant="outline">+{agent.tags.length - 3}</Badge>
+              <StarIcon className="h-4 w-4" />
+              <span className="sr-only">
+                {agent.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+              </span>
+            </Button>
           )}
-        </div>
-        
-        <div className="text-xs text-muted-foreground">
-          {agent.model}
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreHorizontalIcon className="h-4 w-4" />
+                <span className="sr-only">Mais opções</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {onView && (
+                <DropdownMenuItem onClick={() => onView(agent.id)}>
+                  <PlayIcon className="h-4 w-4 mr-2" />
+                  Visualizar
+                </DropdownMenuItem>
+              )}
+              {onEdit && (
+                <DropdownMenuItem onClick={() => onEdit(agent.id)}>
+                  <EditIcon className="h-4 w-4 mr-2" />
+                  Editar
+                </DropdownMenuItem>
+              )}
+              {onToggleActive && (
+                <DropdownMenuItem 
+                  onClick={() => onToggleActive(agent.id, !agent.isActive)}
+                >
+                  {agent.isActive ? 'Desativar' : 'Ativar'}
+                </DropdownMenuItem>
+              )}
+              {onDelete && (
+                <DropdownMenuItem 
+                  onClick={() => onDelete(agent.id)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <TrashIcon className="h-4 w-4 mr-2" />
+                  Excluir
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       
-      <div className="mt-4 text-xs text-muted-foreground flex justify-between">
-        <span>Criado: {agent.createdAt.toLocaleDateString()}</span>
-        <span>Atualizado: {agent.updatedAt.toLocaleDateString()}</span>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {agent.tags.map((tag, index) => (
+          <Badge key={index} variant="outline" className="text-xs">
+            {tag}
+          </Badge>
+        ))}
+      </div>
+      
+      <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+        <div>Modelo: {agent.model}</div>
+        <div>Tipo: {agent.type}</div>
+        {agent.lastUsed && (
+          <div>
+            Último uso: {new Date(agent.lastUsed).toLocaleDateString()}
+          </div>
+        )}
       </div>
     </Card>
   );
