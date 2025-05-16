@@ -1,27 +1,27 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { useCustomCategories } from "@/context/custom-category-context"
+// import { useCustomCategories } from "@/context/custom-category-context"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { CategoryList } from "@/components/marketplace/category-list"
 import { CategoryDialog } from "@/components/marketplace/category-dialog"
-import type { CreateCustomCategoryInput } from "@/types/custom-category"
+import type { CreateCustomCategoryInput, UpdateCustomCategoryInput } from "@/types/custom-category"
 import { Helmet } from "react-helmet" // Para SEO e acessibilidade
 
 /**
  * Página para gerenciar categorias personalizadas.
  */
 export default function CustomCategoriesPage() {
-  const { addCategory } = useCustomCategories()
+  // const { addCategory } = useCustomCategories()
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const handleCreateCategory = useCallback(
-    async (data: CreateCustomCategoryInput) => {
-      await addCategory(data)
+    async (data: CreateCustomCategoryInput | UpdateCustomCategoryInput) => {
+      // await addCategory(data)
       setDialogOpen(false)
     },
-    [addCategory],
+    [],
   )
 
   const openDialog = useCallback(() => {
