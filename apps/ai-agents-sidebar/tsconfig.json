@@ -1,0 +1,35 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": [
+        "components/*"
+      ],
+      "@lib/*": [
+        "lib/*"
+      ],
+      "@hooks/*": [
+        "hooks/*"
+      ],
+      "@types/*": [
+        "types/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ],
+      "@constants/*": [
+        "constants/*"
+      ]
+    }
+  },
+  "include": [
+    "app",
+    "components",
+    "lib",
+    "hooks",
+    "types",
+    "utils",
+    "constants"
+  ]
+}
