@@ -1,11 +1,11 @@
 "use client"
+import React from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreVertical, Eye, Edit, Play, Copy, Trash } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { AgentCardProps } from "@/types/component-params"
 
 /**
  * Component for displaying an agent card in the listing
@@ -26,6 +26,35 @@ import type { AgentCardProps } from "@/types/component-params"
  * @param props - Component properties
  * @returns React component
  */
+interface AgentCardAction {
+  onClick: (agent: any) => void;
+  className?: string;
+  icon?: React.ReactNode;
+  label?: React.ReactNode;
+}
+
+interface AgentCardProps {
+  agent: any;
+  onDuplicate: (agent: any) => void;
+  onDelete: (agent: any) => void;
+  formatDate: (date: string) => string;
+  onView?: (agent: any) => void;
+  onEdit?: (agent: any) => void;
+  onTest?: (agent: any) => void;
+  showActions?: boolean;
+  customActions?: AgentCardAction[];
+  showFooter?: boolean;
+  showBadges?: boolean;
+  onClick?: (agent: any) => void;
+  isSelected?: boolean;
+  selectable?: boolean;
+  onSelect?: (selected: boolean) => void;
+  className?: string;
+  id?: string;
+  testId?: string;
+  ariaLabel?: string;
+}
+
 export function AgentCard({
   // Required props
   agent,

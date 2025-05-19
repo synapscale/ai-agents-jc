@@ -1,4 +1,5 @@
 "use client"
+import React from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,7 +10,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import type { AgentDeleteDialogProps } from "@/types/component-params"
 
 /**
  * Dialog for confirming agent deletion
@@ -29,6 +29,20 @@ import type { AgentDeleteDialogProps } from "@/types/component-params"
  * @param props - Component properties
  * @returns React component
  */
+// Tipagem local para as props do dialog
+interface AgentDeleteDialogProps {
+  agent: any;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+  title?: string;
+  description?: string;
+  cancelText?: string;
+  confirmText?: string;
+  id?: string;
+  testId?: string;
+  ariaLabel?: string;
+}
+
 export function AgentDeleteDialog({
   // Required props
   agent,

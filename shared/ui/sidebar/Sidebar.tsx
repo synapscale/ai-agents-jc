@@ -1,3 +1,5 @@
+"use client"
+
 /// <reference types="react" />
 
 import { useState, useEffect, useCallback } from "react"

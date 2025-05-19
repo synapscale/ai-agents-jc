@@ -2,27 +2,55 @@
 
 import { useCallback, useMemo, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { toast } from "@/components/ui/use-toast"
-import { AgentFormHeader } from "@/components/agents/agent-form-header"
-import { TemplatesModal } from "@/components/templates-modal"
-import { useForm } from "@hooks/use-form"
-import { useDisclosure } from "@hooks/use-disclosure"
-import { useLocalStorage } from "@/hooks/use-local-storage"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AgentBasicInfo } from "@/components/agents/agent-basic-info"
-import { AgentPromptTab } from "@/components/agents/agent-prompt-tab"
-import { AgentParametersTab } from "@/components/agents/agent-parameters-tab"
-import { AgentConnectionsTab } from "@/components/agents/agent-connections-tab"
-import { AgentFormActions } from "@/components/agents/agent-form-actions"
-import { AgentFormLoading } from "@/components/agents/agent-form-loading"
-import { AgentNotFound } from "@/components/agents/agent-not-found"
-import { UnsavedChangesDialog } from "@/components/agents/unsaved-changes-dialog"
-import { formValidation } from "../../../../packages/utils/form-validation"
-import type { Agent, AgentFormData } from "@packages/types/agent-types"
-import type { AgentType } from "../../../../packages/types/agent-types"
+import { useForm } from "../../../../../shared/hooks/use-form"
+import { useDisclosure } from "../../../../../shared/hooks/use-disclosure"
+import { useLocalStorage } from "../../../../../shared/hooks/use-local-storage"
+import { useToast } from "../../../../../shared/hooks/use-toast"
+import { formValidation } from "../../../../../shared/utils/form-validation"
+import type { AgentType } from "../../../../../shared/types/agent-types"
+import { AgentFormHeader } from "../../../components/agents/agent-form-header"
+import { TemplatesModal } from "../../../components/templates-modal"
+import { AgentFormLoading } from "../../../components/agents/agent-form-loading"
+import { AgentNotFound } from "../../../components/agents/agent-not-found"
+import { AgentBasicInfo } from "../../../components/agents/agent-basic-info"
+import { AgentPromptTab } from "../../../components/agents/agent-prompt-tab"
+import { AgentParametersTab } from "../../../components/agents/agent-parameters-tab"
+import { AgentConnectionsTab } from "../../../components/agents/agent-connections-tab"
+import { AgentFormActions } from "../../../components/agents/agent-form-actions"
+import { UnsavedChangesDialog } from "../../../components/agents/unsaved-changes-dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs"
+
+// Defina o tipo Agent localmente para garantir compatibilidade
+interface Agent {
+  id: string;
+  name: string;
+  type: string;
+  model: string;
+  prompt?: string;
+  createdAt: string;
+  updatedAt: string;
+  status?: "active" | "draft" | "archived";
+  urls?: Array<{ id: string; label: string }>;
+  agents?: Array<{ id: string; label: string }>;
+  description?: string;
+  maxTokens?: number;
+  temperature?: number;
+  topP?: number;
+  frequencyPenalty?: number;
+  presencePenalty?: number;
+  stopSequences?: string[];
+  userDecision?: boolean;
+}
+
+// Defina AgentFormData localmente se não existir
+interface AgentFormData extends Agent {}
+
+// Substituir DEFAULT_PROMPT por string vazia ou valor padrão local, pois não foi encontrado no projeto
+const DEFAULT_PROMPT = ""
 
 export default function AgentePage({ params }: { params: { id: string } }) {
   const router = useRouter()
+  const { toast } = useToast()
   const isNewAgent = params.id === "novo"
 
   // State for loading
@@ -149,13 +177,11 @@ export default function AgentePage({ params }: { params: { id: string } }) {
         }
 
         // Update agents in local storage
-        setAgents((prev) => {
-          if (isNewAgent) {
-            return [...prev, updatedAgent]
-          } else {
-            return prev.map((agent) => (agent.id === updatedAgent.id ? updatedAgent : agent))
-          }
-        })
+        if (isNewAgent) {
+          setAgents([...agents, updatedAgent])
+        } else {
+          setAgents(agents.map((agent) => (agent.id === updatedAgent.id ? updatedAgent : agent)))
+        }
 
         // Reset unsaved changes flag
         setHasUnsavedChanges(false)
@@ -165,8 +191,7 @@ export default function AgentePage({ params }: { params: { id: string } }) {
           title: isNewAgent ? "Agente criado com sucesso!" : "Alterações salvas com sucesso!",
           description: isNewAgent
             ? "Seu novo agente foi criado e está pronto para uso."
-            : "As alterações no agente foram salvas.",
-          duration: 3000,
+            : "As alterações no agente foram salvas."
         })
 
         // Redirect to agents list
@@ -174,9 +199,7 @@ export default function AgentePage({ params }: { params: { id: string } }) {
       } catch (error) {
         toast({
           title: "Erro ao salvar",
-          description: "Ocorreu um erro ao salvar o agente. Tente novamente.",
-          variant: "destructive",
-          duration: 3000,
+          description: "Ocorreu um erro ao salvar o agente. Tente novamente."
         })
         throw error
       }
@@ -185,7 +208,7 @@ export default function AgentePage({ params }: { params: { id: string } }) {
   )
 
   // Usar o hook de formulário
-  const form = useForm<AgentFormData>({
+  const form = useForm({
     initialValues,
     onSubmit: handleSubmitForm,
     validate: formValidation,

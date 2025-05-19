@@ -1,10 +1,10 @@
 "use client"
+import React from "react"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Search, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { AgentListFiltersProps } from "@/types/component-params"
 
 /**
  * Filters component for the agent listing page
@@ -44,7 +44,21 @@ export function AgentListFilters({
   id,
   testId,
   ariaLabel,
-}: AgentListFiltersProps) {
+}: {
+  searchQuery: string
+  statusFilter: string
+  onSearchChange: (value: string) => void
+  onStatusChange: (value: string) => void
+  searchPlaceholder?: string
+  showStatusFilter?: boolean
+  customFilters?: React.ReactNode
+  onClearFilters?: () => void
+  showClearFilters?: boolean
+  className?: string
+  id?: string
+  testId?: string
+  ariaLabel?: string
+}) {
   const hasActiveFilters = searchQuery || statusFilter !== "all"
   const componentId = id || "agent-list-filters"
 

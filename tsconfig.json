@@ -1,21 +1,18 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
+    "jsx": "preserve",
     "paths": {
-		"@themePkg/*": ["packages/theme/theme-provider/*"],
-		"@shared/*": ["shared/*"],
-		"@hooks/*": ["shared/hooks/*"],
-		"@ui/*": ["shared/ui/*"],
-		"@theme/*": ["shared/theme-provider/*"],
-		"@components/*": ["apps/ai-agents-sidebar/components/*"],
-		"@lib/*": ["apps/ai-agents-sidebar/lib/*"],
-		"@utils/*": ["shared/utils/*"],
-      "@types/*": ["packages/types/*"],
-      "@utils/*": ["packages/utils/*"],
-      "@constants/*": ["packages/constants/*"],
-      "@hooks/*": ["packages/hooks/*"],
-      "@ui/*": ["packages/ui/*"],
+      "@themePkg/*": ["packages/theme/theme-provider/*"],
       "@shared/*": ["shared/*"],
+      "@hooks/*": ["shared/hooks/*"],
+      "@ui/*": ["shared/ui/*"],
+      "@theme/*": ["shared/theme-provider/*"],
+      "@components/*": ["apps/ai-agents-sidebar/components/*"],
+      "@lib/*": ["apps/ai-agents-sidebar/lib/*"],
+      "@utils/*": ["shared/utils/*"],
+      "@types/*": ["packages/types/*"],
+      "@constants/*": ["packages/constants/*"],
       "@shared/hooks": ["shared/hooks/index.ts"],
       "@shared/ui": ["shared/ui/index.ts"],
       "@shared/types": ["shared/types/index.ts"]
@@ -28,9 +25,4 @@
     { "path": "./apps/node-sidebar" }
   ]
 }
-
-# Alias para shared
-
-
-# Alias para packages
 

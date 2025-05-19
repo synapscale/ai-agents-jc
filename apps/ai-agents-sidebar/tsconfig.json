@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "jsx": "preserve",
     "paths": {
       "@components/*": [
         "components/*"
@@ -12,24 +13,172 @@
       "@hooks/*": [
         "hooks/*"
       ],
+      "@hooks/use-toast": [
+        "../../shared/hooks/use-toast.ts"
+      ],
       "@types/*": [
         "types/*"
       ],
       "@utils/*": [
         "utils/*"
       ],
+      "@constants": [
+        "constants/index.ts"
+      ],
       "@constants/*": [
         "constants/*"
+      ],
+      "@shared/hooks/*": [
+        "../../shared/hooks/*"
+      ],
+      "@shared/utils/*": [
+        "../../shared/utils/*"
+      ],
+      "@shared/types/*": [
+        "../../shared/types/*"
+      ],
+      "@/components/ui/button": [
+        "components/ui/button.tsx"
+      ],
+      "@/components/ui/badge": [
+        "components/ui/badge.tsx"
+      ],
+      "@/components/ui/textarea": [
+        "components/ui/textarea.tsx"
+      ],
+      "@/components/ui/skeleton": [
+        "components/ui/skeleton.tsx"
+      ],
+      "@/components/ui/use-toast": [
+        "components/ui/use-toast.ts"
+      ],
+      "@/components/ui/tabs": [
+        "components/ui/tabs.tsx"
+      ],
+      "@/components/ui/section": [
+        "components/ui/section.tsx"
+      ],
+      "@/components/ui/alert-dialog": [
+        "components/ui/alert-dialog.tsx"
+      ],
+      "@/components/ui/card": [
+        "components/ui/card.tsx"
+      ],
+      "@/components/form/input-field": [
+        "components/form/input-field.tsx"
+      ],
+      "@/components/form/select-field": [
+        "components/form/select-field.tsx"
+      ],
+      "@/hooks/use-local-storage": [
+        "../../shared/hooks/use-local-storage.ts"
+      ],
+      "@/lib/utils": [
+        "lib/utils.ts"
+      ],
+      "@/constants/agent-constants": [
+        "constants/agent-constants.ts"
+      ],
+      "@/components/ui/dropdown-menu": [
+        "components/ui/dropdown-menu.tsx"
+      ],
+      "@/components/ui/badge-list": [
+        "components/ui/badge-list.tsx"
+      ],
+      "@/components/ui/input": [
+        "components/ui/input.tsx"
+      ],
+      "@/components/ui/switch": [
+        "components/ui/switch.tsx"
+      ],
+      "@/components/ui/label": [
+        "components/ui/label.tsx"
+      ],
+      "@/components/agents/prompt-editor": [
+        "components/agents/prompt-editor.tsx"
+      ],
+      "@/components/agents/prompt-tools-bar": [
+        "components/agents/prompt-tools-bar.tsx"
+      ],
+      "@/components/form/form-field": [
+        "components/form/form-field.tsx"
+      ],
+      "@/components/ui/dialog": [
+        "components/ui/dialog.tsx"
+      ],
+      "@/components/templates/template-list": [
+        "components/templates/template-list.tsx"
+      ],
+      "@/components/templates/template-preview": [
+        "components/templates/template-preview.tsx"
+      ],
+      "@/components/templates/template-form": [
+        "components/templates/template-form.tsx"
+      ],
+      "@/components/templates/category-selector": [
+        "components/templates/category-selector.tsx"
+      ],
+      "@/components/templates/category-manager": [
+        "components/templates/category-manager.tsx"
+      ],
+      "@/components/ui/popover": [
+        "components/ui/popover.tsx"
+      ],
+      "@/components/ui/command": [
+        "components/ui/command.tsx"
+      ],
+      "@/components/ui/scroll-area": [
+        "components/ui/scroll-area.tsx"
+      ],
+      "@/components/templates/template-card": [
+        "components/templates/template-card.tsx"
+      ],
+      "@/components/ui/separator": [
+        "components/ui/separator.tsx"
+      ],
+      "@/components/ui/sheet": [
+        "components/ui/sheet.tsx"
+      ],
+      "@/components/ui/tooltip": [
+        "components/ui/tooltip.tsx"
+      ],
+      "@/components/ui/toast": [
+        "components/ui/toast.tsx"
       ]
-    }
+    },
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "incremental": true,
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "app",
     "components",
-    "lib",
+    "constants",
     "hooks",
+    "lib",
     "types",
     "utils",
-    "constants"
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

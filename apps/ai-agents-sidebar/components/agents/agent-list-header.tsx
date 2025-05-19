@@ -1,8 +1,8 @@
 "use client"
+import React from "react"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { AgentListHeaderProps } from "@/types/component-params"
 
 /**
  * Header component for the agent listing page
@@ -36,7 +36,17 @@ export function AgentListHeader({
   id,
   testId,
   ariaLabel,
-}: AgentListHeaderProps) {
+}: {
+  onCreateAgent: () => void
+  title?: string
+  createButtonText?: string
+  showCreateButton?: boolean
+  additionalActions?: React.ReactNode
+  className?: string
+  id?: string
+  testId?: string
+  ariaLabel?: string
+}) {
   const componentId = id || "agent-list-header"
 
   return (
