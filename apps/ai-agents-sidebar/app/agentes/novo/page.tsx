@@ -1,15 +1,4 @@
-"use client"
-
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-
+// Esta página não é necessária. A criação de novo agente é tratada por [id]/page.tsx com id="novo".
 export default function NovoAgentePage() {
-  const router = useRouter()
-
-  // Redirect to the agent form with "novo" as the ID
-  useEffect(() => {
-    router.replace("/agentes/novo")
-  }, [router])
-
-  return null
+  return null;
 }
