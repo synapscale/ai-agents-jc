@@ -13,7 +13,7 @@ import type { PromptEditorProps } from "@/types/component-params"
  * including auto-resizing, tab handling, and template selection.
  *
  * @example
- * \`\`\`tsx
+ * ```tsx
  * <PromptEditor
  *   value={prompt}
  *   onChange={setPrompt}
@@ -23,7 +23,7 @@ import type { PromptEditorProps } from "@/types/component-params"
  *   required
  *   onSelectTemplate={() => openTemplatesModal()}
  * />
- * \`\`\`
+ * ```
  *
  * @param props - Component properties
  * @returns React component
@@ -115,7 +115,6 @@ export function PromptEditor({
           </button>
         ) : null
       }
-      testId={testId}
     >
       <div
         className={cn(

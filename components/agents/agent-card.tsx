@@ -14,14 +14,14 @@ import type { AgentCardProps } from "@/types/component-params"
  * testing, duplicating, and deleting the agent.
  *
  * @example
- * ```tsx
+ * \`\`\`tsx
  * <AgentCard
  *   agent={agent}
  *   onDuplicate={handleDuplicate}
  *   onDelete={handleDelete}
  *   formatDate={formatDate}
  * />
- * ```
+ * \`\`\`
  *
  * @param props - Component properties
  * @returns React component
