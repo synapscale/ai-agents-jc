@@ -11,22 +11,6 @@ import type { PromptEditorProps } from "@/types/component-params"
  *
  * This component provides a textarea with enhanced features for editing AI prompts,
  * including auto-resizing, tab handling, and template selection.
- *
- * @example
- * ```tsx
- * <PromptEditor
- *   value={prompt}
- *   onChange={setPrompt}
- *   onBlur={validatePrompt}
- *   error={errors.prompt}
- *   label="Agent Prompt"
- *   required
- *   onSelectTemplate={() => openTemplatesModal()}
- * />
- * ```
- *
- * @param props - Component properties
- * @returns React component
  */
 export function PromptEditor({
   // Required props
@@ -97,33 +81,34 @@ export function PromptEditor({
 
   const inputId = id || "prompt-editor"
 
-  return (
-    <FormField
-      label={label}
-      error={error}
-      required={required}
-      id={inputId}
-      headerRight={
-        onSelectTemplate && showTemplateButton ? (
-          <button
-            type="button"
-            onClick={onSelectTemplate}
-            className="text-sm text-purple-600 hover:text-purple-800 font-medium"
-            aria-label="Usar template de prompt"
-          >
-            Usar template
-          </button>
-        ) : null
-      }
-    >
-      <div
-        className={cn(
-          "relative rounded-md border transition-colors",
-          isFocused ? "border-purple-500 ring-1 ring-purple-500" : "border-input",
-          error && "border-red-300 ring-1 ring-red-500",
-          className,
-        )}
+  // Prepare className separately to avoid JSX syntax issues
+  const textareaContainerClassName = cn(
+    "relative rounded-md border transition-colors",
+    isFocused ? "border-purple-500 ring-1 ring-purple-500" : "border-input",
+    error && "border-red-300 ring-1 ring-red-500",
+    className,
+  )
+
+  const textareaClassName = cn(
+    "flex w-full rounded-md border-0 bg-transparent px-3 py-2 text-sm shadow-none focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 font-mono",
+  )
+
+  // Template button
+  const templateButton =
+    onSelectTemplate && showTemplateButton ? (
+      <button
+        type="button"
+        onClick={onSelectTemplate}
+        className="text-sm text-purple-600 hover:text-purple-800 font-medium"
+        aria-label="Usar template de prompt"
       >
+        Usar template
+      </button>
+    ) : null
+
+  return (
+    <FormField label={label} error={error} required={required} id={inputId} headerRight={templateButton}>
+      <div className={textareaContainerClassName}>
         <textarea
           ref={textareaRef}
           id={inputId}
@@ -135,9 +120,7 @@ export function PromptEditor({
             onBlur?.()
           }}
           onKeyDown={handleKeyDown}
-          className={cn(
-            "flex w-full rounded-md border-0 bg-transparent px-3 py-2 text-sm shadow-none focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 font-mono",
-          )}
+          className={textareaClassName}
           style={{ minHeight, resize: "vertical" }}
           placeholder={placeholder}
           required={required}

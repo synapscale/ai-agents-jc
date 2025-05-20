@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { forwardRef, useState } from "react"
 import { FormField } from "./form-field"
 import { Input } from "@/components/ui/input"
@@ -55,6 +54,14 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       onChange?.(e.target.value)
     }
 
+    // Prepare className separately to avoid JSX syntax issues
+    const inputClassName = cn(
+      isFocused && "border-purple-500 ring-1 ring-purple-500",
+      error && "border-red-300 focus-visible:ring-red-500",
+      showCharCount && "pr-16",
+      className,
+    )
+
     return (
       <FormField label={label} name={name} error={error} required={required} helperText={helperText} id={inputId}>
         <div className="relative">
@@ -72,12 +79,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             maxLength={maxLength}
             autoComplete={autoComplete}
             autoFocus={autoFocus}
-            className={cn(
-              isFocused && "border-purple-500 ring-1 ring-purple-500",
-              error && "border-red-300 focus-visible:ring-red-500",
-              showCharCount && "pr-16",
-              className,
-            )}
+            className={inputClassName}
             aria-invalid={!!error}
             aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
             required={required}

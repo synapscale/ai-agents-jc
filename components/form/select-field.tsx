@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { forwardRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { FormField } from "@/components/form/form-field"
@@ -54,6 +53,14 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       onChange?.(e.target.value)
     }
 
+    // Prepare className separately to avoid JSX syntax issues
+    const selectClassName = cn(
+      "flex h-9 w-full appearance-none rounded-md border border-input bg-background px-3 py-1 pr-8 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+      isFocused && "border-purple-500 ring-1 ring-purple-500",
+      error && "border-red-300 focus-visible:ring-red-500",
+      className,
+    )
+
     return (
       <FormField label={label} name={name} error={error} required={required} helperText={helperText} id={selectId}>
         <div className="relative">
@@ -66,12 +73,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             disabled={disabled}
-            className={cn(
-              "flex h-9 w-full appearance-none rounded-md border border-input bg-background px-3 py-1 pr-8 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
-              isFocused && "border-purple-500 ring-1 ring-purple-500",
-              error && "border-red-300 focus-visible:ring-red-500",
-              className,
-            )}
+            className={selectClassName}
             aria-invalid={!!error}
             aria-describedby={error ? `${selectId}-error` : helperText ? `${selectId}-helper` : undefined}
             required={required}

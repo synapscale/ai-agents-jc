@@ -10,7 +10,7 @@ import { Sidebar, SidebarContent, SidebarHeader } from "@/components/ui/sidebar"
 import { SidebarNavItem } from "@/components/sidebar/sidebar-nav-item"
 import { SidebarNavSection } from "@/components/sidebar/sidebar-nav-section"
 
-// Definição das seções de navegação
+// Navigation sections definition
 const NAV_SECTIONS = [
   {
     title: "Principal",
@@ -38,35 +38,35 @@ export function AppSidebar() {
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
-  // Verificar se é dispositivo móvel
+  // Check if device is mobile
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768)
     }
 
-    // Verificar inicialmente
+    // Initial check
     checkIfMobile()
 
-    // Adicionar listener para redimensionamento
+    // Add resize listener
     window.addEventListener("resize", checkIfMobile)
 
-    // Limpar listener
+    // Clean up listener
     return () => window.removeEventListener("resize", checkIfMobile)
   }, [])
 
-  // Fechar sidebar ao navegar em dispositivos móveis
+  // Close sidebar when navigating on mobile devices
   useEffect(() => {
     if (isMobile) {
       setIsOpen(false)
     }
   }, [pathname, isMobile])
 
-  // Alternar sidebar
+  // Toggle sidebar
   const toggleSidebar = useCallback(() => {
     setIsOpen((prev) => !prev)
   }, [])
 
-  // Verificar se um item está ativo
+  // Check if an item is active
   const isItemActive = useCallback(
     (href: string) => {
       if (href === "/agentes") {
@@ -77,33 +77,43 @@ export function AppSidebar() {
     [pathname],
   )
 
+  // Mobile menu button
+  const mobileMenuButton = isMobile ? (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="fixed top-3 left-3 z-50 md:hidden h-9 w-9"
+      onClick={toggleSidebar}
+      aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
+      aria-expanded={isOpen}
+      aria-controls="sidebar"
+    >
+      {isOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+    </Button>
+  ) : null
+
+  // Mobile overlay
+  const mobileOverlay =
+    isMobile && isOpen ? (
+      <div
+        className="fixed inset-0 bg-black/20 z-30 md:hidden backdrop-blur-sm"
+        onClick={toggleSidebar}
+        aria-hidden="true"
+      />
+    ) : null
+
+  // Sidebar classes
+  const sidebarClasses = cn(
+    "border-0 transition-all duration-300",
+    isMobile && (isOpen ? "translate-x-0" : "-translate-x-full"),
+    isMobile && "fixed top-0 left-0 z-40 h-full",
+  )
+
   return (
     <>
-      {/* Botão de menu para dispositivos móveis */}
-      {isMobile && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="fixed top-3 left-3 z-50 md:hidden h-9 w-9"
-          onClick={toggleSidebar}
-          aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
-          aria-expanded={isOpen}
-          aria-controls="sidebar"
-        >
-          {isOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
-        </Button>
-      )}
+      {mobileMenuButton}
 
-      <Sidebar
-        variant="floating"
-        className={cn(
-          "border-0 transition-all duration-300",
-          isMobile && (isOpen ? "translate-x-0" : "-translate-x-full"),
-          isMobile && "fixed top-0 left-0 z-40 h-full",
-        )}
-        id="sidebar"
-        aria-label="Navegação principal"
-      >
+      <Sidebar variant="floating" className={sidebarClasses} id="sidebar" aria-label="Navegação principal">
         <SidebarHeader className="flex items-center justify-center py-4 sm:py-6">
           <Link href="/" className="flex items-center gap-2" aria-label="Página inicial">
             <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md bg-purple-600 text-white">
@@ -130,14 +140,7 @@ export function AppSidebar() {
         </SidebarContent>
       </Sidebar>
 
-      {/* Overlay para dispositivos móveis */}
-      {isMobile && isOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 z-30 md:hidden backdrop-blur-sm"
-          onClick={toggleSidebar}
-          aria-hidden="true"
-        />
-      )}
+      {mobileOverlay}
     </>
   )
 }
