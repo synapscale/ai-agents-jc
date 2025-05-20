@@ -6,7 +6,7 @@ import { ArrowLeft, BarChart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Section } from "@/components/ui/section"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useLocalStorage } from "@hooks/use-local-storage"
+import { useLocalStorage } from "@/hooks/use-local-storage"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 // Interface for agents in storage

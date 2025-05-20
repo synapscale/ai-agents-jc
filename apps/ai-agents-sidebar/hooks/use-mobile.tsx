@@ -1,8 +1,2 @@
-import * as React from "react"
-import { useMobile } from "@shared/hooks/use-mobile"
-
-export function useIsMobile() {
-  const isMobile = useMobile()
-
-  return isMobile
-}
+// Arquivo migrado para packages/hooks/use-mobile.tsx
+// Utilize apenas o hook compartilhado.

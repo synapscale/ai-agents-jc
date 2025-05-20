@@ -5,7 +5,7 @@ import "./globals.css"
 import { Sidebar } from "../../../shared/ui/sidebar/Sidebar"
 import { SidebarProvider } from "../components/ui/sidebar"
 import { Toaster } from "../components/ui/toaster"
-import { ThemeProvider } from "../../../packages/theme/theme-provider/ThemeProvider";
+import { ThemeProvider } from "../../../packages/theme/theme-provider";
 
 // Load Inter font with Latin subset
 const inter = Inter({

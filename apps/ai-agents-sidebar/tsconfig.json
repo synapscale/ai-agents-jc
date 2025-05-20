@@ -144,6 +144,57 @@
       ],
       "@/components/ui/toast": [
         "components/ui/toast.tsx"
+      ],
+      "@/components/layout/app-layout": [
+        "components/layout/app-layout.tsx"
+      ],
+      "@/components/settings/settings-sidebar": [
+        "components/settings/settings-sidebar.tsx"
+      ],
+      "@/components/node-sidebar/node-sidebar": [
+        "../../shared/node-sidebar/node-sidebar.tsx"
+      ],
+      "@/contexts/canvas-context": [
+        "contexts/canvas-context.tsx"
+      ],
+      "@/contexts/app-context": [
+        "contexts/chat-interativo/app-context.tsx"
+      ],
+      "@/components/chat/chat-interface": [
+        "components/chat/chat-interface.tsx"
+      ],
+      "@/components/component-selector/component-selector": [
+        "components/component-selector/component-selector.tsx"
+      ],
+      "@/components/marketplace/collections-browser": [
+        "components/marketplace/collections-browser.tsx"
+      ],
+      "@/components/marketplace/marketplace-browser": [
+        "components/marketplace/marketplace-browser.tsx"
+      ],
+      "@/components/marketplace/marketplace-item-card": [
+        "components/marketplace/marketplace-item-card.tsx"
+      ],
+      "@/components/marketplace/collection-card": [
+        "components/marketplace/collection-card.tsx"
+      ],
+      "@/components/marketplace/collection-details": [
+        "components/marketplace/collection-details.tsx"
+      ],
+      "@/components/marketplace/marketplace-sidebar": [
+        "components/marketplace/marketplace-sidebar.tsx"
+      ],
+      "@/components/marketplace/publish-skill-form": [
+        "components/marketplace/publish-skill-form.tsx"
+      ],
+      "@/components/marketplace/user-collections": [
+        "components/marketplace/user-collections.tsx"
+      ],
+      "@/components/marketplace/user-marketplace-items": [
+        "components/marketplace/user-marketplace-items.tsx"
+      ],
+      "@/components/ui/icon-button": [
+        "components/ui/icon-button.tsx"
       ]
     },
     "target": "ES2017",
