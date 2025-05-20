@@ -1,23 +1,11 @@
 "use client"
 
-import type React from "react"
 import { useRef, useEffect, useState } from "react"
-import { cn } from "@/lib/utils"
 import { FormField } from "@/components/form/form-field"
-import type { PromptEditorProps } from "@/types/component-params"
 
-/**
- * A specialized editor for AI prompts with syntax highlighting and tools
- *
- * This component provides a textarea with enhanced features for editing AI prompts,
- * including auto-resizing, tab handling, and template selection.
- */
 export function PromptEditor({
-  // Required props
   value,
   onChange,
-
-  // Optional props with defaults
   onSelectTemplate,
   error,
   className,
@@ -31,36 +19,32 @@ export function PromptEditor({
   showCharCount = true,
   autoFocus = false,
   showTemplateButton = true,
-
-  // Accessibility props
   id,
   testId,
   ariaLabel,
-}: PromptEditorProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+}) {
+  const textareaRef = useRef(null)
   const [isFocused, setIsFocused] = useState(false)
   const showCharacterCount = maxLength && showCharCount
+  const inputId = id || "prompt-editor"
 
   // Auto-resize textarea
   useEffect(() => {
     const textarea = textareaRef.current
     if (!textarea) return
 
-    const adjustHeight = () => {
+    function adjustHeight() {
       textarea.style.height = "auto"
       textarea.style.height = `${Math.max(textarea.scrollHeight, Number.parseInt(minHeight))}px`
     }
 
     adjustHeight()
     window.addEventListener("resize", adjustHeight)
-
-    return () => {
-      window.removeEventListener("resize", adjustHeight)
-    }
+    return () => window.removeEventListener("resize", adjustHeight)
   }, [value, minHeight])
 
   // Tab key handling for indentation
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  function handleKeyDown(e) {
     if (e.key === "Tab") {
       e.preventDefault()
       const start = e.currentTarget.selectionStart
@@ -79,36 +63,37 @@ export function PromptEditor({
     }
   }
 
-  const inputId = id || "prompt-editor"
+  // Determine container class
+  let containerClass = "relative rounded-md border transition-colors"
+  if (isFocused) containerClass += " border-purple-500 ring-1 ring-purple-500"
+  else containerClass += " border-input"
+  if (error) containerClass += " border-red-300 ring-1 ring-red-500"
+  if (className) containerClass += " " + className
 
-  // Prepare className separately to avoid JSX syntax issues
-  const textareaContainerClassName = cn(
-    "relative rounded-md border transition-colors",
-    isFocused ? "border-purple-500 ring-1 ring-purple-500" : "border-input",
-    error && "border-red-300 ring-1 ring-red-500",
-    className,
-  )
-
-  const textareaClassName = cn(
-    "flex w-full rounded-md border-0 bg-transparent px-3 py-2 text-sm shadow-none focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 font-mono",
-  )
-
-  // Template button
-  const templateButton =
-    onSelectTemplate && showTemplateButton ? (
-      <button
-        type="button"
-        onClick={onSelectTemplate}
-        className="text-sm text-purple-600 hover:text-purple-800 font-medium"
-        aria-label="Usar template de prompt"
-      >
-        Usar template
-      </button>
-    ) : null
+  // Determine textarea class
+  const textareaClass =
+    "flex w-full rounded-md border-0 bg-transparent px-3 py-2 text-sm shadow-none focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
 
   return (
-    <FormField label={label} error={error} required={required} id={inputId} headerRight={templateButton}>
-      <div className={textareaContainerClassName}>
+    <FormField
+      label={label}
+      error={error}
+      required={required}
+      id={inputId}
+      headerRight={
+        onSelectTemplate && showTemplateButton ? (
+          <button
+            type="button"
+            onClick={onSelectTemplate}
+            className="text-sm text-purple-600 hover:text-purple-800 font-medium"
+            aria-label="Usar template de prompt"
+          >
+            Usar template
+          </button>
+        ) : null
+      }
+    >
+      <div className={containerClass}>
         <textarea
           ref={textareaRef}
           id={inputId}
@@ -117,10 +102,10 @@ export function PromptEditor({
           onFocus={() => setIsFocused(true)}
           onBlur={() => {
             setIsFocused(false)
-            onBlur?.()
+            if (onBlur) onBlur()
           }}
           onKeyDown={handleKeyDown}
-          className={textareaClassName}
+          className={textareaClass}
           style={{ minHeight, resize: "vertical" }}
           placeholder={placeholder}
           required={required}
