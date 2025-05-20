@@ -1,96 +1,143 @@
 "use client"
 
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutGrid, FileText, MessageSquare, BarChart2, Users, Settings } from "lucide-react"
-import { useApp } from "@/contexts/app-context"
+import { Bot, LayoutDashboard, Settings, Sparkles, Layers, FileText, MessageSquare, Menu, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { Sidebar, SidebarContent, SidebarHeader } from "@/components/ui/sidebar"
+import { SidebarNavItem } from "@/components/sidebar/sidebar-nav-item"
+import { SidebarNavSection } from "@/components/sidebar/sidebar-nav-section"
 
-export default function Sidebar() {
+// Definição das seções de navegação
+const NAV_SECTIONS = [
+  {
+    title: "Principal",
+    items: [
+      { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard /> },
+      { href: "/agentes", label: "Agentes De IA", icon: <Bot /> },
+    ],
+  },
+  {
+    title: "Ferramentas",
+    items: [
+      { href: "/canvas", label: "Canvas", icon: <Layers /> },
+      { href: "/prompts", label: "Prompts", icon: <FileText /> },
+      { href: "/chat", label: "Chat", icon: <MessageSquare /> },
+    ],
+  },
+  {
+    title: "Configurações",
+    items: [{ href: "/settings", label: "Configurações", icon: <Settings /> }],
+  },
+]
+
+export function AppSidebar() {
   const pathname = usePathname()
-  const { isSidebarOpen } = useApp()
+  const [isMobile, setIsMobile] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
-  const menuItems = [
-    {
-      title: "Editor de Workflow",
-      icon: <LayoutGrid className="h-5 w-5" />,
-      href: "/editor",
-    },
-    {
-      title: "Documentação",
-      icon: <FileText className="h-5 w-5" />,
-      href: "/docs",
-    },
-    {
-      title: "Chat Interativo",
-      icon: <MessageSquare className="h-5 w-5" />,
-      href: "/chat",
-    },
-    {
-      title: "Dashboard",
-      icon: <BarChart2 className="h-5 w-5" />,
-      href: "/dashboard",
-    },
-    {
-      title: "Equipe",
-      icon: <Users className="h-5 w-5" />,
-      href: "/team",
-    },
-    {
-      title: "Configurações",
-      icon: <Settings className="h-5 w-5" />,
-      href: "/settings",
-    },
-  ]
+  // Verificar se é dispositivo móvel
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
 
-  // Adicionar classe condicional para dispositivos móveis
-  const sidebarClass = `w-64 bg-white border-r border-gray-200 h-screen flex flex-col ${
-    isSidebarOpen ? "block" : "hidden md:flex"
-  }`
+    // Verificar inicialmente
+    checkIfMobile()
+
+    // Adicionar listener para redimensionamento
+    window.addEventListener("resize", checkIfMobile)
+
+    // Limpar listener
+    return () => window.removeEventListener("resize", checkIfMobile)
+  }, [])
+
+  // Fechar sidebar ao navegar em dispositivos móveis
+  useEffect(() => {
+    if (isMobile) {
+      setIsOpen(false)
+    }
+  }, [pathname, isMobile])
+
+  // Alternar sidebar
+  const toggleSidebar = useCallback(() => {
+    setIsOpen((prev) => !prev)
+  }, [])
+
+  // Verificar se um item está ativo
+  const isItemActive = useCallback(
+    (href: string) => {
+      if (href === "/agentes") {
+        return pathname === "/agentes" || pathname.startsWith("/agentes/")
+      }
+      return pathname === href
+    },
+    [pathname],
+  )
 
   return (
-    <div className={sidebarClass}>
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center">
-          <div className="h-8 w-8 rounded-md bg-blue-600 text-white flex items-center justify-center font-bold mr-2">
-            JC
-          </div>
-          <div>
-            <h2 className="font-bold">Agente AI</h2>
-            <p className="text-sm text-gray-500">Canvas</p>
-          </div>
-        </div>
-      </div>
-      <nav className="flex-1 p-4">
-        <ul className="space-y-2">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <li key={item.href}>
-                <Link
+    <>
+      {/* Botão de menu para dispositivos móveis */}
+      {isMobile && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="fixed top-3 left-3 z-50 md:hidden h-9 w-9"
+          onClick={toggleSidebar}
+          aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={isOpen}
+          aria-controls="sidebar"
+        >
+          {isOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+        </Button>
+      )}
+
+      <Sidebar
+        variant="floating"
+        className={cn(
+          "border-0 transition-all duration-300",
+          isMobile && (isOpen ? "translate-x-0" : "-translate-x-full"),
+          isMobile && "fixed top-0 left-0 z-40 h-full",
+        )}
+        id="sidebar"
+        aria-label="Navegação principal"
+      >
+        <SidebarHeader className="flex items-center justify-center py-4 sm:py-6">
+          <Link href="/" className="flex items-center gap-2" aria-label="Página inicial">
+            <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md bg-purple-600 text-white">
+              <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+            </div>
+            <span className="text-base sm:text-lg font-semibold">Canva E Agentes</span>
+          </Link>
+        </SidebarHeader>
+
+        <SidebarContent>
+          {NAV_SECTIONS.map((section) => (
+            <SidebarNavSection key={section.title} title={section.title}>
+              {section.items.map((item) => (
+                <SidebarNavItem
+                  key={item.href}
                   href={item.href}
-                  className={`flex items-center p-2 rounded-md ${
-                    isActive ? "bg-gray-100 text-blue-600" : "text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  {item.icon}
-                  <span className="ml-3">{item.title}</span>
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </nav>
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center mr-2">
-            <span className="text-sm">U</span>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Usuário</p>
-            <p className="text-xs text-gray-500">Online</p>
-          </div>
-        </div>
-      </div>
-    </div>
+                  icon={item.icon}
+                  label={item.label}
+                  isActive={isItemActive(item.href)}
+                />
+              ))}
+            </SidebarNavSection>
+          ))}
+        </SidebarContent>
+      </Sidebar>
+
+      {/* Overlay para dispositivos móveis */}
+      {isMobile && isOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 z-30 md:hidden backdrop-blur-sm"
+          onClick={toggleSidebar}
+          aria-hidden="true"
+        />
+      )}
+    </>
   )
 }

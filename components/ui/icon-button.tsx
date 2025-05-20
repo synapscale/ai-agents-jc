@@ -1,119 +1,94 @@
-/**
- * IconButton Component
- *
- * A button with an icon and optional tooltip.
- *
- * @ai-pattern ui-component
- * Reusable button component with icon and tooltip support
- */
 "use client"
 
 import type React from "react"
-import { forwardRef } from "react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-/**
- * Props for the IconButton component
- */
-export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /**
-   * Icon to display in the button
-   */
+interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: React.ReactNode
-
-  /**
-   * Optional tooltip text
-   */
-  tooltip?: string
-
-  /**
-   * Size of the button
-   * @default "md"
-   */
-  size?: "sm" | "md" | "lg"
-
-  /**
-   * Button variant
-   * @default "ghost"
-   */
-  variant?: "default" | "ghost" | "outline" | "secondary" | "destructive" | "link"
-
-  /**
-   * Whether the button is active
-   * @default false
-   */
-  active?: boolean
-
-  /**
-   * Active class name
-   * @default "bg-primary/10 text-primary"
-   */
-  activeClassName?: string
+  label: string
+  variant?: "default" | "outline" | "ghost" | "link"
+  size?: "xs" | "sm" | "md" | "lg" | "xl"
+  displayMode?: "icon-only" | "icon-and-label"
+  loading?: boolean
+  className?: string
 }
 
 /**
  * IconButton component
+ *
+ * A button that displays an icon, optionally with a label.
+ *
+ * @example
+ * ```tsx
+ * <IconButton
+ *   icon={<PlusIcon />}
+ *   label="Add Item"
+ *   onClick={handleAdd}
+ *   variant="outline"
+ * />
+ * ```
  */
-export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  (
-    {
-      icon,
-      tooltip,
-      disabled = false,
-      className = "",
-      size = "md",
-      variant = "ghost",
-      active = false,
-      activeClassName = "bg-primary/10 text-primary",
-      onClick,
-      ...props
-    },
-    ref,
-  ) => {
-    // Size classes for the button
-    const sizeClasses = {
-      sm: "h-7 w-7",
-      md: "h-9 w-9",
-      lg: "h-11 w-11",
-    }
+export function IconButton({
+  icon,
+  label,
+  variant = "default",
+  size = "md",
+  displayMode = "icon-only",
+  loading = false,
+  className,
+  ...props
+}: IconButtonProps) {
+  // Size classes
+  const sizeClasses = {
+    xs: "h-6 w-6 text-xs",
+    sm: "h-8 w-8 text-sm",
+    md: "h-10 w-10 text-base",
+    lg: "h-12 w-12 text-lg",
+    xl: "h-14 w-14 text-xl",
+  }
 
-    // Combine classes
-    const buttonClassName = cn(sizeClasses[size], "rounded-full", active && activeClassName, className)
+  // Variant classes
+  const variantClasses = {
+    default: "bg-primary text-primary-foreground hover:bg-primary/90",
+    outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+    ghost: "hover:bg-accent hover:text-accent-foreground",
+    link: "text-primary underline-offset-4 hover:underline",
+  }
 
-    // Create button content
-    const buttonContent = (
-      <Button
-        ref={ref}
-        variant={variant}
-        size="icon"
-        onClick={onClick}
-        disabled={disabled}
-        className={buttonClassName}
-        aria-pressed={active}
-        {...props}
-      >
-        {icon}
-      </Button>
-    )
+  // Display mode classes
+  const displayModeClasses = {
+    "icon-only": "p-0",
+    "icon-and-label": "flex items-center justify-center gap-1 px-3",
+  }
 
-    // Add tooltip if provided
-    if (tooltip) {
-      return (
-        <TooltipProvider>
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p className="text-xs">{tooltip}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )
-    }
-
-    return buttonContent
-  },
-)
-
-IconButton.displayName = "IconButton"
+  return (
+    <button
+      type="button"
+      className={cn(
+        "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none",
+        displayMode === "icon-only" ? sizeClasses[size] : "",
+        variantClasses[variant],
+        displayModeClasses[displayMode],
+        className,
+      )}
+      aria-label={label}
+      disabled={loading || props.disabled}
+      {...props}
+    >
+      {icon}
+      {displayMode === "icon-and-label" && <span>{label}</span>}
+      {loading && (
+        <span className="absolute inset-0 flex items-center justify-center">
+          <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </span>
+      )}
+    </button>
+  )
+}
