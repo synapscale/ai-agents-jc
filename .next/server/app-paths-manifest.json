@@ -3,5 +3,7 @@
   "/canvas/page": "app/canvas/page.js",
   "/agentes/page": "app/agentes/page.js",
   "/docs/page": "app/docs/page.js",
-  "/chat/page": "app/chat/page.js"
+  "/chat/page": "app/chat/page.js",
+  "/team/page": "app/team/page.js",
+  "/settings/page": "app/settings/page.js"
 }
